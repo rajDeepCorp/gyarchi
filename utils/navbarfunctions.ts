@@ -1,13 +1,17 @@
 // utils/navbarfunctions.ts
 
-import { usePathname } from "next/navigation";
+
 import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { IconType } from "react-icons";
 import { CiCamera, CiSearch, CiSettings, CiShop, CiUser, } from "react-icons/ci";
+import { authClient } from "@/lib/auth-client";
 
 type NavKey = | "Home" | "Search" | "Post" | "Settings" | "Profile" | "Signin";
 type LinkMeta = { Icon: IconType; label: string; title: string; key: NavKey; href: string; };
-const pathToKey: Record<string, NavKey> = { "/": "Home", "/search": "Search", "/post": "Post", "/settings": "Settings", "/profile": "Profile", "/signin": "Signin", "/signup": "Signin", };
+const pathToKey: Record<string, NavKey> = {
+    "/": "Home", "/search": "Search", "/post": "Post", "/settings": "Settings", "/profile": "Profile", "/signin": "Signin", "/signup": "Signin",
+};
 
 export function useFloatingFunction() {
     const [scrollingDown, setScrollingDown] = useState(false);
@@ -32,40 +36,40 @@ export function useFloatingFunction() {
 }
 
 export function useLinksFunction() {
-    // const isLoggedIn = Boolean(user?.username?.trim() && user?.emailVerified);
-    // const isGeneral = (user?.username?.trim());
     const pathname = usePathname();
+    const { data: session } = authClient.useSession();
+    const user = session?.user as
+        | { username?: string; emailVerified: boolean; image?: string | null; name: string; email: string; } | null;
+
+    const isLoggedIn = Boolean(
+        user?.username?.trim() &&
+        user?.emailVerified
+    );
+
+    const isGeneral = Boolean(user?.username?.trim());
     const activeKey = pathToKey[pathname] ?? null;
     const links = useMemo<LinkMeta[]>(() => {
-        return [
+        const items: LinkMeta[] = [
             { Icon: CiShop, label: "Home", title: "Home", key: "Home", href: "/", },
             { Icon: CiSearch, label: "Search", title: "Search", key: "Search", href: "/search", },
-            { Icon: CiCamera, label: "Post Work", title: "Post Work", key: "Post", href: "/post", },
-            { Icon: CiSettings, label: "Settings", title: "Settings", key: "Settings", href: "/settings", },
-            { Icon: CiUser, label: "Profile", title: "Profile", key: "Profile", href: "/profile", },
         ];
+        if (isLoggedIn) {
+            items.push({ Icon: CiCamera, label: "Post Work", title: "Post Work", key: "Post", href: "/post", });
+        }
+        if (isGeneral) {
+            items.push({ Icon: CiSettings, label: "Settings", title: "Settings", key: "Settings", href: "/settings", });
+        }
+        items.push({
+            Icon: CiUser,
+            label: isLoggedIn ? "Profile" : "Signin",
+            title: isLoggedIn ? "Profile" : "Signin",
+            key: isLoggedIn ? "Profile" : "Signin",
+            href: isLoggedIn ? "/profile" : "/signin",
+        });
 
-        // if (isGeneral) {
-        //     links.push(
-        //         { Icon: CiSettings, label: "Settings", title: "Settings", key: "Settings", href: "/settings", },
-        //     );
-        // }
+        return items;
+    }, [isLoggedIn, isGeneral]);
 
-        // if (isLoggedIn) {
-        //     links.push(
-        //         { Icon: CiCamera, label: "Post Work", title: "Post Work", key: "Post", href: "/post", },
-        //     );
-        // }
-
-        // links.push({
-        //     Icon: CiUser,
-        //     label: isLoggedIn ? "Profile" : "Signin",
-        //     title: isLoggedIn ? "Profile" : "Signin",
-        //     key: isLoggedIn ? "Profile" : "Signin",
-        //     href: isLoggedIn ? "/profile" : "/signin",
-        // });
-
-    }, [/* isLoggedIn */]);
     return {
         links,
         activeKey,
