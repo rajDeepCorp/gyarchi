@@ -31,6 +31,7 @@ type Post = {
     tags: string[];
 };
 
+
 type RelatedPost = Post & {
     id: string;
     score: number;
@@ -39,8 +40,41 @@ type RelatedPost = Post & {
 
 export async function generateMetadata({ params }: ArtworkPageProps) {
     const { artwork } = await params;
+    const snapshot = await adminDb.ref(`posts/${artwork}`).get();
+    if (!snapshot.exists()) {
+        return {
+            title: "Artwork Not Found",
+        };
+    }
+    const post = snapshot.val() as Post;
     return {
-        title: `Artwork ${artwork}`,
+        title: post.title,
+        description: post.description,
+        keywords: post.tags,
+        authors: [
+            {
+                name: post.username,
+            },
+        ],
+        openGraph: {
+            title: post.title,
+            description: post.description,
+            images: [
+                {
+                    url: post.imageUrl,
+                    width: 1200,
+                    height: 1200,
+                    alt: post.title,
+                },
+            ],
+            type: "website",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: post.title,
+            description: post.description,
+            images: [post.imageUrl],
+        },
     };
 }
 
@@ -165,10 +199,10 @@ export default async function Artwork({
                                 className="rounded-xl shadow shadow-stone-500 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg"
                             />
                         </Link>
-                    ))):
-                (<p className="text-center text-muted-foreground">
-                    No related artworks found.
-                </p>)}
+                    ))) :
+                    (<p className="text-center text-muted-foreground">
+                        No related artworks found.
+                    </p>)}
             </section>
         </main>
     );
