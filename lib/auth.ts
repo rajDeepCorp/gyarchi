@@ -77,15 +77,15 @@ export const auth = betterAuth({
         additionalFields: {
             username: {
                 type: "string",
-                required: true,
+                required: false,
             },
             mobile: {
                 type: "string",
-                required: true,
+                required: false,
             },
             dob: {
                 type: "string",
-                required: true,
+                required: false,
             },
             image: {
                 type: "string",

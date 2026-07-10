@@ -1,7 +1,7 @@
 // components/navigation/Navbar.tsx
 
 "use client";
-import { useFloatingFunction, useLinksFunction } from '@/utils/navbarfunctions'
+import { useFloatingFunction, useLinksFunction } from '@/utils/clientfunctions'
 import Link from 'next/link'
 
 const Navbar = () => {
