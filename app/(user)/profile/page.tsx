@@ -49,9 +49,9 @@ export default function Profile() {
         </button>
       </div>
 
-      <div className='relative w-full flex flex-col justify-center items-center mt-4 gap-2'>
-        <p className='relative w-full text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic py-0.5 shadow shadow-stone-500 rounded-t-2xl'>Links</p>
-        <div className='w-full max-w-xs flex justify-start items-center gap-4 flex-wrap'>
+      <div className='relative w-full max-w-xs flex flex-col justify-center items-center mt-4 gap-2'>
+        <p className='relative w-full text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic shadow shadow-stone-500 rounded-t-full'>Links</p>
+        <div className='w-full flex justify-start items-center gap-4 flex-wrap'>
           <Link href="/" className='relative text-2xl rounded-full shadow p-2 shadow-stone-500'>
             <CiInstagram />
           </Link>
@@ -62,7 +62,7 @@ export default function Profile() {
       </div>
 
       <div className='relative w-full flex flex-col justify-center items-center mt-4 gap-2'>
-        <p className='relative w-full text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic py-0.5 shadow shadow-stone-500 rounded-t-2xl'>Artwork</p>
+        <p className='relative w-full max-w-2xl text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic shadow shadow-stone-500 rounded-t-full'>Artwork</p>
         <div className="relative columns-2 lg:columns-3 xl:columns-5 2xl:columns-7">
           {images.map((image) => (
             <Link

@@ -1,32 +1,60 @@
 // app/(main)/page.tsx
 
+import { adminDb } from "@/firebaseAdmin";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+    const snapshot = await adminDb.ref("posts").get();
 
-    const images = [1, 2, 3, 4, 5];
+    let posts: any[] = [];
+    if (snapshot.exists()) {
+        const data = snapshot.val();
+        posts = Object.entries(data)
+            .map(([id, post]: any) => ({
+                id,
+                ...post,
+            }))
+            .sort(
+                (a: any, b: any) =>
+                    b.createdAt - a.createdAt
+            );
+    }
+
     return (
-        <div className="relative flex flex-col justify-center items-center gap-2">
-            <div className="relative max-w-lg min-w-xs shadow shadow-stone-500 m-2 p-2 rounded-2xl text-center">
-                Search
+        <main className="flex flex-col items-center gap-6">
+            <div className="relative max-w-lg min-w-xs shadow shadow-stone-500 m-2 px-2 py-1 rounded-4xl">
+                <input
+                    type="search"
+                    placeholder="Search artworks..."
+                    className="w-full rounded-2xl shadow-inner shadow-stone-500 p-1 ring-none outline-none"
+                />
             </div>
-            <div className="relative columns-2 lg:columns-3 xl:columns-5 2xl:columns-7">
-                {images.map((image) => (
+
+            <section className="columns-2 lg:columns-3 xl:columns-5 2xl:columns-7 gap-4">
+                {posts.map((post) => (
                     <Link
-                        key={image}
-                        href={`/art/${image}`}
+                        key={post.id}
+                        href={`/art/${post.id}`}
+                        className="block break-inside-avoid mb-4"
                     >
                         <Image
                             width={720}
                             height={720}
-                            src={`/${image}.jpg`}
-                            alt={`Image ${image}`}
-                            className="rounded-xl mb-4 shadow shadow-stone-500 hover:opacity-90 transition"
+                            src={post.imageUrl}
+                            alt={post.title || "Artwork"}
+                            priority={post.id <= 3}
+                            sizes="
+                                (max-width:640px) 100vw,
+                                (max-width:1024px) 50vw,
+                                (max-width:1536px) 33vw,
+                                20vw
+                            "
+                            className="rounded-xl shadow shadow-stone-500 hover:opacity-90 transition"
                         />
                     </Link>
                 ))}
-            </div>
-        </div>
+            </section>
+        </main>
     );
 }

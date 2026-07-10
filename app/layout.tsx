@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins, Varela_Round } from "next/font/google";
+import { Poppins, Varela_Round } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 
@@ -28,6 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${poppinsFont.variable} ${varelaRoundFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col shadow-inner shadow-stone-500 m-1 p-2 rounded-2xl">
