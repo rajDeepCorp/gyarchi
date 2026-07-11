@@ -1,25 +1,40 @@
+// app/(user)/profile/page.tsx
+
 import SignoutButton from '@/components/ui/SignoutButton'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
-import { CiFacebook, CiHeart, CiInstagram, CiSaveDown2, CiShoppingCart } from 'react-icons/ci'
+import { redirect } from 'next/navigation'
+import { CiFacebook, CiInstagram, } from 'react-icons/ci'
 import { PiCakeThin } from 'react-icons/pi'
 import { VscVerified } from 'react-icons/vsc'
 
-export default function Profile() {
+export default async function Profile() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect('/signin');
+  }
   const images = [1, 2, 3, 4, 5];
+
   return (
     <div className='relative w-full flex flex-col justify-start items-center overflow-hidden'>
 
       <div className='relative rounded-2xl flex flex-col justify-center items-center'>
         <div className='relative w-37.5 h-37.5 rounded-full shadow shadow-stone-500 overflow-hidden '>
-          <Image src="/2.jpg" alt="" fill className="object-cover" sizes="150px" />
+          <Image src={session.user.image || "/userpic.jpg"} alt={session.user.name} fill className="object-cover" sizes="150px" />
         </div>
-        <p className='relative text-xl tracking-widest text-shadow-stone-500 text-shadow-xs opacity-90 fancyFont'>Peter Parker</p>
+        <p className='relative text-xl tracking-widest text-shadow-stone-500 text-shadow-xs opacity-90 fancyFont'>{session.user.name}</p>
         <p className='relative max-w-fit text-center flex justify-start items-center text-md italic tracking-tighter leading-2 text-shadow-stone-500 text-shadow-xs'>
-          @vishivish
-          <span className="relative -translate-y-1/3">
-            <VscVerified />
-          </span>
+          {session.user.username || "Guest"}
+          {session.user.username?.trim() && session.user.emailVerified && (
+            <span className="relative -translate-y-1/3">
+              <VscVerified />
+            </span>
+          )}
         </p>
         <p className='relative text-xs w-full text-shadow-stone-500 text-shadow-xs flex justify-start items-center gap-1 mt-1'><PiCakeThin /> 17 Dec</p>
         <p className='relative text-sm w-full text-shadow-stone-500 text-shadow-xs'>Lorem, ipsum dolor sit amet consectetur Lorem ipsum dolor sit amet.</p>
