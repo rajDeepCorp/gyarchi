@@ -36,9 +36,20 @@ export default async function Profile() {
             </span>
           )}
         </p>
-        <p className='relative text-xs w-full text-shadow-stone-500 text-shadow-xs flex justify-start items-center gap-1 mt-1'><PiCakeThin /> 17 Dec</p>
-        <p className='relative text-sm w-full text-shadow-stone-500 text-shadow-xs'>Lorem, ipsum dolor sit amet consectetur Lorem ipsum dolor sit amet.</p>
-        <p className='relative text-sm w-full font-light opacity-90 italic text-shadow-stone-500 text-shadow-xs'>244, Subhash Nagar, Bareilly - 243001</p>
+        <p className='relative text-xs w-full text-shadow-stone-500 text-shadow-xs flex justify-start items-center gap-1 mt-1'>
+          <PiCakeThin /> {session.user.dob
+            ? new Date(session.user.dob).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+            })
+            : "No DOB"}
+        </p>
+        <p className='relative text-sm w-full text-shadow-stone-500 text-shadow-xs'>
+          {session.user.bio || null}
+        </p>
+        <p className='relative text-sm w-full font-light opacity-90 italic text-shadow-stone-500 text-shadow-xs'>
+          {session.user.address || null}
+        </p>
       </div>
 
       <div className='relative w-full max-w-2xl flex justify-around items-center mt-4'>
