@@ -18,9 +18,6 @@ export function useLinksFunction() {
     const { data: session } = authClient.useSession();
 
     const user = session?.user ?? null;
-    // const user = session?.user as
-    //     | { username?: string; emailVerified: boolean; image?: string | null; name: string; email: string; } | null;
-
     const isLoggedIn = Boolean(user?.emailVerified
         // user?.username?.trim() &&
         // user?.emailVerified
