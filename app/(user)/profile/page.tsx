@@ -1,12 +1,13 @@
 // app/(user)/profile/page.tsx
 
 import SignoutButton from '@/components/ui/SignoutButton'
+import UserPosts from '@/components/ui/UserPosts'
+import { UserSocialLinks } from '@/components/ui/UserSocialLinks'
+import { adminDb } from '@/firebaseAdmin'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import Image from 'next/image'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { CiFacebook, CiInstagram, } from 'react-icons/ci'
 import { PiCakeThin } from 'react-icons/pi'
 import { VscVerified } from 'react-icons/vsc'
 
@@ -18,7 +19,28 @@ export default async function Profile() {
   if (!session) {
     redirect('/signin');
   }
-  const images = [1, 2, 3, 4, 5];
+
+  const snapshot = await adminDb.ref("posts").get();
+
+  let posts: any[] = [];
+
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+
+    posts = Object.entries(data)
+      .map(([id, post]: any) => ({
+        id,
+        ...post,
+      }))
+      .filter(
+        (post: any) =>
+          post.username === session.user.username
+      )
+      .sort(
+        (a: any, b: any) =>
+          b.createdAt - a.createdAt
+      );
+  }
 
   return (
     <div className='relative w-full flex flex-col justify-start items-center overflow-hidden'>
@@ -77,19 +99,14 @@ export default async function Profile() {
 
       <div className='relative w-full max-w-xs flex flex-col justify-center items-center mt-4 gap-2'>
         <p className='relative w-full text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic shadow shadow-stone-500 rounded-t-full'>Links</p>
-        <div className='w-full flex justify-start items-center gap-4 flex-wrap'>
-          <Link href="/" className='relative text-2xl rounded-full shadow p-2 shadow-stone-500'>
-            <CiInstagram />
-          </Link>
-          <Link href="/" className='relative text-2xl rounded-full shadow p-2 shadow-stone-500'>
-            <CiFacebook />
-          </Link>
-        </div>
+        <UserSocialLinks user={session.user} />
       </div>
 
       <div className='relative w-full flex flex-col justify-center items-center mt-4 gap-2'>
         <p className='relative w-full max-w-2xl text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic shadow shadow-stone-500 rounded-t-full'>Artwork</p>
-        <div className="relative columns-2 lg:columns-3 xl:columns-5 2xl:columns-7">
+
+        {session.user.username && <UserPosts posts={posts} />}
+        {/* <div className="relative columns-2 lg:columns-3 xl:columns-5 2xl:columns-7">
           {images.map((image) => (
             <Link
               key={image}
@@ -104,7 +121,7 @@ export default async function Profile() {
               />
             </Link>
           ))}
-        </div>
+        </div> */}
       </div>
 
       <div className="relative max-w-full min-w-xs shadow shadow-stone-500 px-4 py-2 m-1 rounded-4xl">
