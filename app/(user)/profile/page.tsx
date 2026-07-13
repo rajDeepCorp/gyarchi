@@ -43,7 +43,7 @@ export default async function Profile() {
   }
 
   return (
-    <div className='relative w-full flex flex-col justify-start items-center overflow-hidden'>
+    <div className='w-full flex flex-col justify-start items-center overflow-hidden'>
 
       <div className='relative rounded-2xl flex flex-col justify-center items-center'>
         <div className='relative w-37.5 h-37.5 rounded-full shadow shadow-stone-500 overflow-hidden '>

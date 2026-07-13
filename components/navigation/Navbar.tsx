@@ -10,7 +10,7 @@ const Navbar = () => {
 
     return (
         <nav
-            className={`fixed bottom-0 left-1/2 -translate-x-1/2 shadow-inner shadow-stone-500 bg-background py-2 px-4 my-1 rounded-4xl text-2xl flex justify-center items-center gap-4 transition-transform duration-300 ease-out ${scrollingDown ? "translate-y-[125%]" : "translate-y-0"}`}
+            className={`fixed bottom-0 left-1/2 -translate-x-1/2 shadow shadow-stone-500 bg-background py-2 px-4 my-1 rounded-4xl text-2xl flex justify-center items-center gap-4 transition-transform duration-300 ease-out ${scrollingDown ? "translate-y-[125%]" : "translate-y-0"}`}
         >
             {links.map(({ Icon, label, title, key, href }) => (
                 <Link

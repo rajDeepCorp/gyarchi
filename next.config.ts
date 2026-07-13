@@ -13,11 +13,6 @@ const nextConfig: NextConfig = {
         hostname: 'rzm5yq3cejorz1tp.public.blob.vercel-storage.com',
         port: '',
       },
-      {
-        protocol: 'https',
-        hostname: 'platform-lookaside.fbsbx.com',
-        port: '',
-      },
     ],
   },
   reactCompiler: true,
