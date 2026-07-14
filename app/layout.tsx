@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Poppins, Varela_Round } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import SideNavbar from "@/components/navigation/SideNavbar";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+
 
 const poppinsFont = Poppins({
   variable: "--font-poppins-font",
@@ -20,11 +24,9 @@ export const metadata: Metadata = {
   description: "Created by Vishal Rajdeep",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
+  const session = await auth.api.getSession({ headers: await headers(), });
+
   return (
     <html
       lang="en"
@@ -32,6 +34,8 @@ export default function RootLayout({
       className={`${poppinsFont.variable} ${varelaRoundFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col shadow-inner shadow-stone-500 m-1 p-2 rounded-2xl">
+        {session && <SideNavbar />}
+        
         {children}
         <Toaster
           position="top-center"

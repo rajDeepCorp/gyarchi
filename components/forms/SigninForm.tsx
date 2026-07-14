@@ -41,7 +41,7 @@ const SigninForm = () => {
       toast.dismiss(loadingToast);
       toast.error("Something went wrong");
     } finally {
-      setLoading(false);
+      // do nothing
     }
   }
 

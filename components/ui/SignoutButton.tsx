@@ -1,7 +1,6 @@
 "use client";
-import React from 'react'
 import { authClient } from '@/lib/auth-client';
-import { redirect } from 'next/navigation';
+// import { redirect } from 'next/navigation';
 
 const SignoutButton = () => {
 
@@ -10,7 +9,8 @@ const SignoutButton = () => {
             {
                 fetchOptions: {
                     onSuccess: () => {
-                        redirect('/');
+                        // redirect('/');
+                        window.location.reload();
                     },
                 },
             });

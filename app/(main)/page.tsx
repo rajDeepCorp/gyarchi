@@ -22,7 +22,7 @@ export default async function Home() {
     }
 
     return (
-        <main className="flex flex-col items-center gap-6">
+        <main className="flex flex-col items-center gap-6 mt-8">
             <div className="relative max-w-lg min-w-xs shadow shadow-stone-500 m-2 px-2 py-1 rounded-4xl">
                 <input
                     type="search"

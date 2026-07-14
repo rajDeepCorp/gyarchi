@@ -9,10 +9,8 @@ export default async function UserLayout({ children, }: Readonly<{ children: Rea
     const session = await auth.api.getSession({ headers: await headers(), });
 
     if (!session) {
-        redirect('/signin');
+        redirect('/');
       }
-
-    const user = session?.user ?? null;
 
     return (
         <main className="relative">
