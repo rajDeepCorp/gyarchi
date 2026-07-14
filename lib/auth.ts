@@ -119,10 +119,6 @@ export const auth = betterAuth({
                 type: "string",
                 required: false,
             },
-            github: {
-                type: "string",
-                required: false,
-            },
             website: {
                 type: "string",
                 required: false,

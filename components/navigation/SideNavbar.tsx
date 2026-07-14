@@ -1,7 +1,7 @@
 // components/navigation/SideNavbar.tsx
 
 "use client";
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import SideNavButton from '../ui/SideNavButton';
 import SideNavSection from '../ui/SideNavSection';

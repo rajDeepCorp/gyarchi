@@ -14,6 +14,7 @@ const allowedFields = [
   "dob",
   "address",
   "bio",
+  "mobile",
   "facebook",
   "instagram",
   "youtube",

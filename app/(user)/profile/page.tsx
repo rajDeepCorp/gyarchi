@@ -104,24 +104,7 @@ export default async function Profile() {
 
       <div className='relative w-full flex flex-col justify-center items-center mt-4 gap-2'>
         <p className='relative w-full max-w-2xl text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic shadow shadow-stone-500 rounded-t-full'>Artwork</p>
-
         {session.user.username && <UserPosts posts={posts} />}
-        {/* <div className="relative columns-2 lg:columns-3 xl:columns-5 2xl:columns-7">
-          {images.map((image) => (
-            <Link
-              key={image}
-              href={`/art/${image}`}
-            >
-              <Image
-                width={720}
-                height={720}
-                src={`/${image}.jpg`}
-                alt={`Image ${image}`}
-                className="rounded-xl mb-4 shadow shadow-stone-500 hover:opacity-90 transition"
-              />
-            </Link>
-          ))}
-        </div> */}
       </div>
 
       <div className="relative max-w-full min-w-xs shadow shadow-stone-500 px-4 py-2 m-1 rounded-4xl">

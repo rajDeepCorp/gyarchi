@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { RiTwitterXLine } from "react-icons/ri";
 import { SlSocialFacebook, SlSocialInstagram, SlSocialLinkedin, SlSocialYoutube } from "react-icons/sl";
 import Link from 'next/link';
+import { authClient } from '@/lib/auth-client';
 
 interface SideNavSectionProps {
     animateNav: boolean;
@@ -17,6 +18,9 @@ const SideNavSection = ({
     setAnimateNav,
     setIsNavOpen,
 }: SideNavSectionProps) => {
+
+    const { data: session } = authClient.useSession();
+    const user = session?.user;
 
     interface SocialIcon {
         href: string;
@@ -40,9 +44,9 @@ const SideNavSection = ({
 
     const navLinks: NavLink[] = [
         { href: '/', label: 'Home', delay: 1.8 },
-        { href: '/about', label: 'About', delay: 1.6 },
-        { href: '/works', label: 'Works', delay: 1.4 },
-        { href: '/contact', label: 'Contact', delay: 1.2 },
+        { href: '/settings', label: 'Settings', delay: 1.6 },
+        { href: '/about', label: 'About', delay: 1.4 },
+        { href: '/help', label: 'Help', delay: 1.2 },
     ];
 
     const closeAnimateNav = (): void => {
@@ -80,14 +84,14 @@ const SideNavSection = ({
                         ))}
                     </div>
 
-                    {/* Inquiries */}
+                    {/* Email */}
                     <motion.p
                         className='mt-10 origin-bottom mix-blend-difference text-stone-400 text-xl'
                         initial={{ opacity: 0, y: 100 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, ease: "easeOut", delay: 1.2 }}
                     >
-                        Inquiries
+                        Email
                     </motion.p>
                     <motion.p
                         className='mt-1 origin-bottom mix-blend-difference flex text-stone-100 text-xl'
@@ -95,7 +99,9 @@ const SideNavSection = ({
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, ease: "easeOut", delay: 1.4 }}
                     >
-                        <a href="mailto:manishdemon@gmail.com">manishdemon@gmail.com</a>
+                        <a href={`mailto:${user?.email}`}>
+                            {user?.email ?? "Not Available"}
+                        </a>
                     </motion.p>
 
                     {/* Phone */}
@@ -114,7 +120,9 @@ const SideNavSection = ({
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, ease: "easeOut", delay: 1.8 }}
                     >
-                        <a href="tel:+918218795956">+91 821 879 5956</a>
+                        <a href={`tel:${user?.mobile}`}>
+                            {user?.mobile ?? "Not Available"}
+                        </a>
                     </motion.p>
 
                     {/* Bottom Nav Links */}
@@ -127,7 +135,7 @@ const SideNavSection = ({
                                 initial={{ opacity: 0, y: 150, scaleY: 0 }}
                                 animate={{ opacity: 1, y: 0, scaleY: 1 }}
                                 transition={{ duration: 0.3, ease: "easeIn", delay }}
-                                className="transition-all origin-bottom ease-out group-hover:text-stone-500 border-b-4 border-transparent hover:border-b-stone-100 hover:!text-stone-100"
+                                className="transition-all origin-bottom ease-out group-hover:text-stone-500 border-b-4 border-transparent hover:border-b-stone-100 hover:text-stone-100!"
                             >
                                 <Link onClick={closeAnimateNav} href={href}>{label}</Link>
                             </motion.div>
