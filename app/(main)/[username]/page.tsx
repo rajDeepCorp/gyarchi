@@ -7,7 +7,9 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PiCakeThin } from "react-icons/pi";
 import { VscVerified } from "react-icons/vsc";
-import { db } from "@/lib/auth";
+import { auth, db } from "@/lib/auth";
+import Followers from "@/components/ui/Followers";
+import { headers } from "next/headers";
 
 type Props = {
   params: Promise<{
@@ -17,6 +19,10 @@ type Props = {
 
 export default async function UserProfile({ params }: Props) {
   const { username } = await params;
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
 
   const decodedUsername = decodeURIComponent(username);
 
@@ -94,25 +100,12 @@ export default async function UserProfile({ params }: Props) {
         </p>
       </div>
 
-      <div className="relative w-full max-w-2xl flex justify-around items-center mt-4">
-        <button className="relative text-xs translate-x-[-25%] rounded-l-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
-          Follow
-          <span className="absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
-            999
-          </span>
-        </button>
-
-        <button className="relative text-xs translate-x-[-25%] rounded-l-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
-          Following
-          <span className="absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
-            999
-          </span>
-        </button>
-
-        <button className="relative text-xs translate-x-[-25%] rounded-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
-          Hire
-        </button>
-      </div>
+      <Followers
+        profileUserId={user.id}
+        currentUserId={session?.user?.id}
+        followersCount={user.followersCount ?? 0}
+        followingCount={user.followingCount ?? 0}
+      />
 
       <div className="relative w-full max-w-xs flex flex-col justify-center items-center mt-4 gap-2">
         <p className="relative w-full text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic shadow shadow-stone-500 rounded-t-full">
