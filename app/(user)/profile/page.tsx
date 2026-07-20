@@ -1,6 +1,5 @@
 // app/(user)/profile/page.tsx
 
-import SignoutButton from '@/components/ui/SignoutButton'
 import UserPosts from '@/components/ui/UserPosts'
 import { UserSocialLinks } from '@/components/ui/UserSocialLinks'
 import { adminDb } from '@/firebaseAdmin'
@@ -107,11 +106,6 @@ export default async function Profile() {
         {session.user.username && <UserPosts posts={posts} />}
       </div>
 
-      <div className="relative max-w-full min-w-xs shadow shadow-stone-500 px-4 py-2 m-1 rounded-4xl">
-        <span className='relative list-none cursor-pointer font-bold text-center'>
-          <SignoutButton />
-        </span>
-      </div>
     </div>
   )
 }
