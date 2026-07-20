@@ -1,4 +1,4 @@
-// utils/navbarfunctions.ts
+// utils/clientfunctions.ts
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -29,9 +29,6 @@ export function useLinksFunction() {
         if (isArtist) {
             items.push({ Icon: CiCamera, label: "Post Work", title: "Post Work", key: "Post", href: "/post", });
         }
-        if (isGeneral) {
-            items.push({ Icon: CiSettings, label: "Settings", title: "Settings", key: "Settings", href: "/settings", });
-        }
         items.push({
             Icon: CiUser,
             label: isGuest ? "Profile" : "Signin",
@@ -42,7 +39,11 @@ export function useLinksFunction() {
 
         return items;
     }, [isArtist, isGeneral, isGuest,]);
-    return { links, activeKey, };
+    return { links,
+    activeKey,
+    isArtist,
+    isGeneral,
+    isGuest, };
 }
 
 export function useFloatingFunction() {

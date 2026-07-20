@@ -6,6 +6,7 @@ import { RiTwitterXLine } from "react-icons/ri";
 import { SlSocialFacebook, SlSocialInstagram, SlSocialLinkedin, SlSocialYoutube } from "react-icons/sl";
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
+import SignoutButton from './SignoutButton';
 
 interface SideNavSectionProps {
     animateNav: boolean;
@@ -140,6 +141,7 @@ const SideNavSection = ({
                                 <Link onClick={closeAnimateNav} href={href}>{label}</Link>
                             </motion.div>
                         ))}
+                        <SignoutButton />
                     </motion.div>
                 </motion.div>
             )}

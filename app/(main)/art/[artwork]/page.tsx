@@ -105,7 +105,6 @@ export default async function Artwork({
 
     // Related Posts
     const allSnapshot = await adminDb.ref("posts").get();
-
     let relatedPosts: RelatedPost[] = [];
 
     if (allSnapshot.exists()) {
@@ -135,75 +134,168 @@ export default async function Artwork({
     }
 
     return (
-        <main className="mx-auto flex w-full flex-col items-center gap-8">
+        // <main className="mx-auto flex w-full flex-col items-center gap-8">
 
-            {/* Hero Image */}
-            <section className="w-full flex justify-center">
-                <div className="overflow-hidden rounded-2xl shadow shadow-stone-500">
-                    <Image
-                        src={post.imageUrl}
-                        alt={post.title || "Artwork"}
-                        width={720}
-                        height={720}
-                        priority
-                        sizes="(max-width:768px) 100vw, 720px"
-                        className="h-auto max-w-full"
-                    />
-                </div>
-            </section>
+        //     {/* Hero Image */}
+        //     <section className="w-full flex justify-center">
+        //         <div className="overflow-hidden rounded-2xl shadow shadow-stone-500">
+        //             <Image
+        //                 src={post.imageUrl}
+        //                 alt={post.title || "Artwork"}
+        //                 width={720}
+        //                 height={720}
+        //                 priority
+        //                 sizes="(max-width:768px) 100vw, 720px"
+        //                 className="h-auto max-w-full"
+        //             />
+        //             <Link href="/" className="absolute top-5 translate-x-1.5 rounded-2xl mix-blend-difference text-shadow-xs shadow shadow-stone-500 px-2 z-50">{post.username}</Link>
+        //         </div>
+        //     </section>
 
-            {/* Action Buttons */}
-            <nav
-                aria-label="Artwork actions"
-                className="flex w-full max-w-xl justify-around gap-10"
-            >
-                {actions.map(({ icon: Icon, label, count }) => (
-                    <button
-                        key={label}
-                        type="button"
-                        aria-label={label}
-                        className={buttonClasses}
+        //     {/* Action Buttons */}
+        //     <nav
+        //         aria-label="Artwork actions"
+        //         className="flex w-full max-w-xl justify-around gap-10"
+        //     >
+        //         {actions.map(({ icon: Icon, label, count }) => (
+        //             <button
+        //                 key={label}
+        //                 type="button"
+        //                 aria-label={label}
+        //                 className={buttonClasses}
+        //             >
+        //                 <Icon />
+        //                 <span className={countClasses}>
+        //                     {count}
+        //                 </span>
+        //             </button>
+        //         ))}
+        //     </nav>
+
+        //     {/* Related Artworks */}
+        //     <section
+        //         aria-label="Related artworks"
+        //         className="columns-2 gap-4 lg:columns-3 xl:columns-5 2xl:columns-7"
+        //     >
+        //         {relatedPosts.length > 0 ? (
+        //             relatedPosts.map((item) => (
+        //                 <Link
+        //                     key={item.id}
+        //                     href={`/art/${item.id}`}
+        //                     className="mb-4 block break-inside-avoid"
+        //                 >
+        //                     <Image
+        //                         src={item.imageUrl}
+        //                         alt={item.title || "Artwork"}
+        //                         width={720}
+        //                         height={720}
+        //                         loading="lazy"
+        //                         sizes="
+        //                         (max-width:640px) 100vw,
+        //                         (max-width:1024px) 50vw,
+        //                         (max-width:1536px) 33vw,
+        //                         20vw
+        //                     "
+        //                         className="rounded-xl shadow shadow-stone-500 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg"
+        //                     />
+        //                 </Link>
+        //             ))) :
+        //             (<p className="text-center text-muted-foreground">
+        //                 No related artworks found.
+        //             </p>)}
+        //     </section>
+        // </main>
+        <main className="fixed top-0 left-0 h-screen min-h-svh min-w-svw w-screen overflow-hidden bg-black z-50">
+
+            {/* Background Artwork */}
+            <Image
+                src={post.imageUrl}
+                alt={post.title}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+            />
+
+            {/* Dark Gradient */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-black/30" />
+
+            {/* Top Bar */}
+            <div className="absolute top-0 left-0 z-50 flex w-full items-center justify-between p-0">
+                <Link
+                    href="/"
+                    className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-black/60"
+                >
+                    ← Back
+                </Link>
+            </div>
+
+            {/* Right Side Buttons */}
+            <div className="absolute right-0 bottom-24 z-30 flex flex-col items-center gap-7 text-white scale-75">
+
+                <button className="flex flex-col items-center gap-1 transition hover:scale-110">
+                    <CiHeart className="text-5xl drop-shadow-lg" />
+                    <span className="text-sm font-semibold">
+                        {post.likes ?? 0}
+                    </span>
+                </button>
+
+                <button className="flex flex-col items-center gap-1 transition hover:scale-110">
+                    <CiSaveDown2 className="text-5xl drop-shadow-lg" />
+                    <span className="text-sm font-semibold">
+                        {post.saves ?? 0}
+                    </span>
+                </button>
+
+                <button className="flex flex-col items-center gap-1 transition hover:scale-110">
+                    <CiShoppingCart className="text-5xl drop-shadow-lg" />
+                    <span className="text-sm font-semibold">
+                        {post.got ?? 0}
+                    </span>
+                </button>
+
+            </div>
+
+            {/* Bottom Content */}
+            <div className="absolute -bottom-4 -left-10  z-30 w-full p-0 scale-75">
+                <div className="max-w-3xl">
+                    <Link
+                        href={`/${post.username}`}
+                        className="inline-block text-lg font-bold text-white hover:underline"
                     >
-                        <Icon />
-                        <span className={countClasses}>
-                            {count}
-                        </span>
-                    </button>
-                ))}
-            </nav>
+                        {post.username}
+                    </Link>
 
-            {/* Related Artworks */}
-            <section
-                aria-label="Related artworks"
-                className="columns-2 gap-4 lg:columns-3 xl:columns-5 2xl:columns-7"
-            >
-                {relatedPosts.length > 0 ? (
-                    relatedPosts.map((item) => (
-                        <Link
-                            key={item.id}
-                            href={`/art/${item.id}`}
-                            className="mb-4 block break-inside-avoid"
-                        >
-                            <Image
-                                src={item.imageUrl}
-                                alt={item.title || "Artwork"}
-                                width={720}
-                                height={720}
-                                loading="lazy"
-                                sizes="
-                                (max-width:640px) 100vw,
-                                (max-width:1024px) 50vw,
-                                (max-width:1536px) 33vw,
-                                20vw
-                            "
-                                className="rounded-xl shadow shadow-stone-500 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg"
-                            />
-                        </Link>
-                    ))) :
-                    (<p className="text-center text-muted-foreground">
-                        No related artworks found.
-                    </p>)}
-            </section>
+                    <h1 className="mt-3 text-3xl font-bold text-white drop-shadow">
+                        {post.title}
+                    </h1>
+
+                    {post.description && (
+                        <p className="mt-3 max-w-2xl text-white/90">
+                            {post.description}
+                        </p>
+                    )}
+
+                    {post.tags?.length > 0 && (
+                        <div className="mt-4 flex flex-wrap gap-2">
+
+                            {post.tags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="rounded-full bg-white/15 px-3 py-1 text-sm text-white backdrop-blur-md"
+                                >
+                                    #{tag}
+                                </span>
+                            ))}
+
+                        </div>
+                    )}
+
+                </div>
+
+            </div>
+
         </main>
+
     );
 }
