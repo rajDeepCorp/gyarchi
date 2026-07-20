@@ -1,21 +1,99 @@
 // app/(main)/[username]/page.tsx
 
-import UserPosts from "@/components/ui/UserPosts";
-import { UserSocialLinks } from "@/components/ui/UserSocialLinks";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { auth, db } from "@/lib/auth";
+import { headers } from "next/headers";
 import { adminDb } from "@/firebaseAdmin";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import UserPosts from "@/components/ui/UserPosts";
+import Followers from "@/components/ui/Followers";
+import { UserSocialLinks } from "@/components/ui/UserSocialLinks";
 import { PiCakeThin } from "react-icons/pi";
 import { VscVerified } from "react-icons/vsc";
-import { auth, db } from "@/lib/auth";
-import Followers from "@/components/ui/Followers";
-import { headers } from "next/headers";
 
 type Props = {
   params: Promise<{
     username: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata> {
+  const { username } = await params;
+
+  const decodedUsername = decodeURIComponent(username);
+
+  const cleanUsername = decodedUsername.startsWith("@")
+    ? decodedUsername
+    : `@${decodedUsername}`;
+
+  const user = await db.collection("user").findOne({
+    username: cleanUsername,
+  });
+
+  if (!user) {
+    return {
+      title: "User Not Found | GyArchi",
+      description: "The requested profile could not be found.",
+    };
+  }
+
+  const title = `${user.name} (${user.username}) | GyArchi`;
+
+  const description =
+    user.bio?.trim() ||
+    `${user.name} on GyArchi • ${user.followers ?? 0} followers • ${
+      user.following ?? 0
+    } following`;
+
+  return {
+    title,
+    description,
+
+    keywords: [
+      user.name,
+      user.username,
+      "GyArchi",
+      "Artist",
+      "Creator",
+      "Portfolio",
+      "Artwork",
+      "Profile",
+    ],
+
+    openGraph: {
+      title,
+      description,
+      type: "profile",
+      url: `https://gyarchi.vercel.app/${encodeURIComponent(
+        user.username.replace("@", "")
+      )}`,
+      images: [
+        {
+          url: user.image || "/userpic.jpg",
+          width: 1200,
+          height: 1200,
+          alt: `${user.name} Profile`,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [user.image || "/userpic.jpg"],
+    },
+
+    alternates: {
+      canonical: `https://gyarchi.vercel.app/${encodeURIComponent(
+        user.username.replace("@", "")
+      )}`,
+    },
+  };
+}
 
 export default async function UserProfile({ params }: Props) {
   const { username } = await params;

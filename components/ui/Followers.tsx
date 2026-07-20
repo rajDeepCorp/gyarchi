@@ -56,6 +56,11 @@ const Followers = ({ followers, following, username }: Props) => {
                 return;
             }
 
+            if (res.status === 400) {
+                toast.error("Cannot follow yourself");
+                return;
+            }
+
             if (!res.ok) return;
 
             if (isFollowing) {

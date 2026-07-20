@@ -1,3 +1,5 @@
+// app/layout.tsx
+
 import type { Metadata } from "next";
 import { Poppins, Varela_Round } from "next/font/google";
 import "./globals.css";
@@ -20,8 +22,78 @@ const varelaRoundFont = Varela_Round({
 });
 
 export const metadata: Metadata = {
-  title: "GyaRchi | New definition of Social Media",
-  description: "Created by Vishal Rajdeep",
+  title: {
+    default: "GyArchi – Share Art, Inspire the World",
+    template: "%s | GyArchi",
+  },
+  description:
+    "GyArchi is a social platform for artists, designers, photographers, tattoo artists, and creators to showcase artwork, build a portfolio, connect with people, gain followers, and grow their creative presence.",
+
+  keywords: [
+    "GyArchi",
+    "Social Media",
+    "Artists",
+    "Artwork",
+    "Creative Community",
+    "Tattoo",
+    "Tattoo Artists",
+    "Digital Art",
+    "Photography",
+    "Illustration",
+    "Portfolio",
+    "Creators",
+    "Design",
+    "Art Sharing",
+    "Creative Platform",
+  ],
+
+  authors: [
+    {
+      name: "Vishal Rajdeep",
+    },
+  ],
+
+  creator: "Vishal Rajdeep",
+  publisher: "GyArchi",
+
+  metadataBase: new URL("https://gyarchi.vercel.app/"),
+
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://gyarchi.vercel.app",
+    siteName: "GyArchi",
+    title: "GyArchi – Share Art, Inspire the World",
+    description:
+      "Discover, share, and connect through creativity. Join artists from around the world on GyArchi.",
+    images: [
+      {
+        url: "/Logo.png",
+        width: 1200,
+        height: 630,
+        alt: "GyArchi",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "GyArchi – Share Art, Inspire the World",
+    description:
+      "A social media platform built for artists and creators to showcase their work and grow their audience.",
+    images: ["/Logo.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/Logo.png",
+  },
 };
 
 export default async function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
@@ -34,8 +106,7 @@ export default async function RootLayout({ children, }: Readonly<{ children: Rea
       className={`${poppinsFont.variable} ${varelaRoundFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col shadow-inner shadow-stone-500 m-1 p-2 rounded-2xl">
-        {session && <SideNavbar />}
-        
+        {session && <SideNavbar />}        
         {children}
         <Toaster
           position="top-center"

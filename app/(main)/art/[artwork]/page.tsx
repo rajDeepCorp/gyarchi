@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { adminDb } from "@/firebaseAdmin";
 import { auth } from "@/lib/auth";
 import PostButtons from "@/components/ui/PostButtons";
+import type { Metadata } from "next";
 
 type ArtworkPageProps = {
     params: Promise<{
@@ -36,27 +37,71 @@ type RelatedPost = Post & {
 };
 
 
-export async function generateMetadata({ params }: ArtworkPageProps) {
+export async function generateMetadata({
+    params,
+}: ArtworkPageProps): Promise<Metadata> {
     const { artwork } = await params;
+
     const snapshot = await adminDb.ref(`posts/${artwork}`).get();
+
     if (!snapshot.exists()) {
         return {
-            title: "Artwork Not Found",
+            title: "Artwork Not Found | GyArchi",
+            description: "The requested artwork could not be found.",
+            robots: {
+                index: false,
+                follow: false,
+            },
         };
     }
+
     const post = snapshot.val() as Post;
+
+    const title = `${post.title} by ${post.username} | GyArchi`;
+
+    const description =
+        post.description?.trim() ||
+        `Discover "${post.title}" created by ${post.username} on GyArchi. Explore artwork, connect with artists, and find creative inspiration.`;
+
+    const canonical = `https://gyarchi.vercel.app/art/${artwork}`;
+
     return {
-        title: post.title,
-        description: post.description,
-        keywords: post.tags,
+        title,
+        description,
+
+        keywords: [
+            ...(post.tags ?? []),
+            "GyArchi",
+            "Artwork",
+            "Art",
+            "Digital Art",
+            "Illustration",
+            "Tattoo",
+            "Tattoo Design",
+            "Creative",
+            post.username,
+            post.title,
+        ],
+
         authors: [
             {
                 name: post.username,
             },
         ],
+
+        creator: post.username,
+        publisher: "GyArchi",
+
+        alternates: {
+            canonical,
+        },
+
         openGraph: {
-            title: post.title,
-            description: post.description,
+            type: "article",
+            url: canonical,
+            siteName: "GyArchi",
+            title,
+            description,
             images: [
                 {
                     url: post.imageUrl,
@@ -65,13 +110,19 @@ export async function generateMetadata({ params }: ArtworkPageProps) {
                     alt: post.title,
                 },
             ],
-            type: "website",
         },
+
         twitter: {
             card: "summary_large_image",
-            title: post.title,
-            description: post.description,
+            title,
+            description,
             images: [post.imageUrl],
+            creator: post.username,
+        },
+
+        robots: {
+            index: true,
+            follow: true,
         },
     };
 }
