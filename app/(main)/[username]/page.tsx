@@ -101,10 +101,9 @@ export default async function UserProfile({ params }: Props) {
       </div>
 
       <Followers
-        profileUserId={user.id}
-        currentUserId={session?.user?.id}
-        followersCount={user.followersCount ?? 0}
-        followingCount={user.followingCount ?? 0}
+        followers={user.followers ?? 0}
+        following={user.following ?? 0}
+        username={user.username}
       />
 
       <div className="relative w-full max-w-xs flex flex-col justify-center items-center mt-4 gap-2">

@@ -1,79 +1,70 @@
+// components/ui/Followers.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type Props = {
-    profileUserId: string;
-    currentUserId?: string;
-    followersCount: number;
-    followingCount: number;
+    followers: number;
+    following: number;
+    username: string;
 };
 
-const Followers = ({
-    profileUserId,
-    currentUserId,
-    followersCount: initialFollowers,
-    followingCount,
-}: Props) => {
-
-    const [followersCount, setFollowersCount] = useState(initialFollowers);
+const Followers = ({ followers, following, username }: Props) => {
+    const [followersCount, setFollowersCount] = useState(followers);
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const isOwnProfile =
-        currentUserId && currentUserId === profileUserId;
-
     useEffect(() => {
-        if (!currentUserId || isOwnProfile) return;
-
         const checkFollowing = async () => {
             try {
-                const response = await fetch(
-                    `/api/follow/status?targetUserId=${profileUserId}`
+                const res = await fetch(
+                    `/api/auth/update-followers?username=${encodeURIComponent(username)}`
                 );
 
-                if (!response.ok) return;
+                if (!res.ok) return;
 
-                const data = await response.json();
+                const data = await res.json();
 
                 setIsFollowing(data.following);
-            } catch (error) {
-                console.error(error);
-            }
+            } catch { }
         };
 
         checkFollowing();
-    }, [currentUserId, profileUserId, isOwnProfile]);
+    }, [username]);
 
     const handleFollow = async () => {
-        if (!currentUserId || loading) return;
-
-        setLoading(true);
+        if (loading) return;
 
         try {
-            const response = await fetch("/api/follow", {
-                method: isFollowing ? "DELETE" : "POST",
+            setLoading(true);
+
+            const res = await fetch("/api/auth/update-followers", {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    targetUserId: profileUserId,
+                    username,
+                    action: isFollowing ? "unfollow" : "follow",
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error();
+            if (res.status === 401) {
+                toast.error("Please Sign in to Follow");
+                return;
             }
 
+            if (!res.ok) return;
+
             if (isFollowing) {
+                setFollowersCount((prev) => Math.max(0, prev - 1));
                 setIsFollowing(false);
-                setFollowersCount((prev) => prev - 1);
             } else {
-                setIsFollowing(true);
                 setFollowersCount((prev) => prev + 1);
+                setIsFollowing(true);
             }
-        } catch (error) {
-            console.error(error);
         } finally {
             setLoading(false);
         }
@@ -81,37 +72,31 @@ const Followers = ({
 
     return (
         <div className="relative w-full max-w-2xl flex justify-around items-center mt-4">
+            <button
+                onClick={handleFollow}
+                disabled={loading}
+                className={`relative text-xs translate-x-[-25%] rounded-l-2xl px-2 py-1 flex justify-center items-center cursor-pointer disabled:opacity-50 ${isFollowing
+                    ? "shadow-inner shadow-stone-500"
+                    : "shadow shadow-stone-500"
+                    }`}
+            >
+                {loading ? "..." : isFollowing ? "Followers" : "Follow"}
 
-            {!isOwnProfile && (
-                <button
-                    onClick={handleFollow}
-                    disabled={loading}
-                    className="relative text-xs translate-x-[-25%] rounded-l-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center cursor-pointer disabled:opacity-50"
-                >
-                    {loading
-                        ? "..."
-                        : isFollowing
-                            ? "Following"
-                            : "Follow"}
-
-                    <span className="absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
-                        {followersCount}
-                    </span>
-                </button>
-            )}
+                <span className="absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
+                    {followersCount}
+                </span>
+            </button>
 
             <button className="relative text-xs translate-x-[-25%] rounded-l-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
                 Following
-
                 <span className="absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
-                    {followingCount}
+                    {following}
                 </span>
             </button>
 
             <button className="relative text-xs translate-x-[-25%] rounded-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
                 Hire
             </button>
-
         </div>
     );
 };
