@@ -1,5 +1,6 @@
 // app/(user)/profile/page.tsx
 
+import ProfileTabs from '@/components/ui/ProfileTabs'
 import UserPosts from '@/components/ui/UserPosts'
 import { UserSocialLinks } from '@/components/ui/UserSocialLinks'
 import { adminDb } from '@/firebaseAdmin'
@@ -22,23 +23,25 @@ export default async function Profile() {
   const snapshot = await adminDb.ref("posts").get();
 
   let posts: any[] = [];
+  let likedPosts: any[] = [];
 
   if (snapshot.exists()) {
     const data = snapshot.val();
 
-    posts = Object.entries(data)
+    const allPosts = Object.entries(data)
       .map(([id, post]: any) => ({
         id,
         ...post,
       }))
-      .filter(
-        (post: any) =>
-          post.username === session.user.username
-      )
-      .sort(
-        (a: any, b: any) =>
-          b.createdAt - a.createdAt
-      );
+      .sort((a: any, b: any) => b.createdAt - a.createdAt);
+
+    posts = allPosts.filter(
+      (post: any) => post.username === session.user.username
+    );
+
+    likedPosts = allPosts.filter(
+      (post: any) => post.likedBy?.[session.user.id]
+    );
   }
 
   return (
@@ -101,10 +104,11 @@ export default async function Profile() {
         <UserSocialLinks user={session.user} />
       </div>
 
-      <div className='relative w-full flex flex-col justify-center items-center mt-4 gap-2'>
-        <p className='relative w-full max-w-2xl text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic shadow shadow-stone-500 rounded-t-full'>Artwork</p>
-        {session.user.username && <UserPosts posts={posts} />}
-      </div>
+
+      <ProfileTabs
+        posts={posts}
+        likedPosts={likedPosts}
+      />
 
     </div>
   )
