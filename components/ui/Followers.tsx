@@ -2,6 +2,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -206,12 +207,12 @@ const Followers = ({ followers, following, userId }: Props) => {
                                     className="flex justify-between items-center py-2 border-b"
                                 >
                                     <div>
-                                        <a
+                                        <Link
                                             href={`/${user.username}`}
                                             className="font-medium hover:underline"
                                         >
                                             {user.name}
-                                        </a>
+                                        </Link>
                                     </div>
 
                                     <button
