@@ -24,7 +24,7 @@ export default function Signup() {
       <div className="">
         <p className="text-center text-lg border-b font-bold tracking-widest">GyArchi</p>
         <Link href="/" className="text-sm mx-2">Home</Link>
-        <Link href="/" className="text-sm mx-2">About</Link>
+        <Link href="/about" className="text-sm mx-2">About</Link>
       </div>
 
     </div>

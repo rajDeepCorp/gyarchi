@@ -24,7 +24,7 @@ export const auth = betterAuth({
                 subject: "Reset your TATTOOMI password",
                 html: `
                     <div style="font-family:Arial,sans-serif;padding:24px;">
-                        <h2>TATTOOMI</h2>
+                        <h2>GyArchi</h2>
                         <p>Hello ${user.name ?? "Artist"},</p>
                         <p>We received a request to reset your password.</p>
                         <p>Click the button below to create a new password.</p>

@@ -17,7 +17,7 @@ export default function Signin() {
 
       <SigninForm />
 
-      <p className="text-sm">Forgot Password? <Link href="/passwordreset" className="italic underline">Click here</Link></p>
+      <p className="text-sm">Forgot Password? <Link href="/resetpassword" className="italic underline">Click here</Link></p>
 
       <p className="text-sm">or continue with</p>
 
@@ -28,7 +28,7 @@ export default function Signin() {
       <div className="">
         <p className="text-center text-lg border-b font-bold tracking-widest">GyArchi</p>
         <Link href="/" className="text-sm mx-2">Home</Link>
-        <Link href="/" className="text-sm mx-2">About</Link>
+        <Link href="/about" className="text-sm mx-2">About</Link>
       </div>
 
     </div>
