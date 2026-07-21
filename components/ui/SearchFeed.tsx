@@ -13,6 +13,7 @@ type Post = {
     description?: string;
     username?: string;
     tags?: string[];
+    createdAt?: number;
 };
 
 export default function SearchFeed({
@@ -25,21 +26,56 @@ export default function SearchFeed({
     const filteredPosts = useMemo(() => {
         const query = search.trim().toLowerCase();
 
+        // Search box empty hai to original order hi rakho
         if (!query) return posts;
 
-        return posts.filter((post) => {
-            const title = post.title?.toLowerCase() || "";
-            const description = post.description?.toLowerCase() || "";
-            const username = post.username?.toLowerCase() || "";
-            const tags = post.tags?.map((tag) => tag.toLowerCase()) || [];
+        return posts
+            .map((post) => {
+                let score = 0;
 
-            return (
-                title.includes(query) ||
-                description.includes(query) ||
-                username.includes(query) ||
-                tags.some((tag) => tag.includes(query))
-            );
-        });
+                const title = (post.title || "").toLowerCase();
+                const description = (post.description || "").toLowerCase();
+                const username = (post.username || "").toLowerCase();
+                const tags = (post.tags || []).map((tag) => tag.toLowerCase());
+
+                // ---------- TITLE ----------
+                if (title === query) score += 1000;
+                else if (title.startsWith(query)) score += 800;
+                else if (title.includes(query)) score += 600;
+
+                // ---------- TAGS ----------
+                tags.forEach((tag) => {
+                    if (tag === query) score += 500;
+                    else if (tag.startsWith(query)) score += 400;
+                    else if (tag.includes(query)) score += 300;
+                });
+
+                // ---------- USERNAME ----------
+                if (username === query) score += 250;
+                else if (username.startsWith(query)) score += 200;
+                else if (username.includes(query)) score += 150;
+
+                // ---------- DESCRIPTION ----------
+                if (description.includes(query)) score += 100;
+
+                return {
+                    post,
+                    score,
+                };
+            })
+            // sirf matched posts
+            .filter((item) => item.score > 0)
+            // highest score sabse pehle
+            .sort((a, b) => {
+                // Pehle relevance
+                if (b.score !== a.score) {
+                    return b.score - a.score;
+                }
+
+                // Score same ho to newest pehle
+                return (b.post.createdAt || 0) - (a.post.createdAt || 0);
+            })
+            .map((item) => item.post);
     }, [posts, search]);
 
     return (
@@ -66,7 +102,7 @@ export default function SearchFeed({
                             height={720}
                             src={post.imageUrl}
                             alt={post.title || "Artwork"}
-                            sizes="(max-width:640px) 100vw,(max-width:1024px) 50vw,(max-width:1536px) 33vw,20vw"
+                            sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, (max-width:1536px) 33vw, 20vw"
                             className="rounded-xl shadow shadow-stone-500 hover:opacity-90 transition"
                         />
                     </Link>
