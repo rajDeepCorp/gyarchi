@@ -8,6 +8,7 @@ import { adminDb } from "@/firebaseAdmin";
 import { auth } from "@/lib/auth";
 import PostButtons from "@/components/ui/PostButtons";
 import type { Metadata } from "next";
+import ArtworkViewer from "@/components/ui/ArtworkViewer";
 
 type ArtworkPageProps = {
     params: Promise<{
@@ -30,12 +31,10 @@ type Post = {
     tags: string[];
 };
 
-
 type RelatedPost = Post & {
     id: string;
     score: number;
 };
-
 
 export async function generateMetadata({
     params,
@@ -131,21 +130,15 @@ export default async function Artwork({
     params,
 }: ArtworkPageProps) {
     const { artwork } = await params;
-
     const snapshot = await adminDb.ref(`posts/${artwork}`).get();
-
-    if (!snapshot.exists()) {
-        notFound();
-    }
+    if (!snapshot.exists()) { notFound(); }
 
     const post = snapshot.val() as Post;
-
     const session = await auth.api.getSession({
         headers: await headers(),
     });
 
     const userId = session?.user.id;
-
     const liked = !!(userId && post.likedBy?.[userId]);
     const saved = !!(userId && post.savedBy?.[userId]);
     const gotted = !!(userId && post.gotBy?.[userId]);
@@ -196,7 +189,8 @@ export default async function Artwork({
             {/* Dark Gradient */}
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-black/30" />
 
-            {/* Top Bar */}
+            <ArtworkViewer>
+                {/* Top Bar */}
             <div className="absolute top-0 left-0 z-50 flex w-full items-center justify-between p-0">
                 <Link
                     href="/"
@@ -256,6 +250,9 @@ export default async function Artwork({
                 </div>
 
             </div>
+            </ArtworkViewer>
+
+            
 
         </main>
 
