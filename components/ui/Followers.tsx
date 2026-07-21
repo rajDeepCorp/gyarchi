@@ -173,11 +173,7 @@ const Followers = ({ followers, following, userId }: Props) => {
                     {following}
                 </span>
             </button>
-
-            <button className="relative text-xs translate-x-[-25%] rounded-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
-                Hire
-            </button>
-
+            
             {openModal && (
                 <div
                     className="fixed inset-0 z-50 bg-black/40 flex justify-center items-center"

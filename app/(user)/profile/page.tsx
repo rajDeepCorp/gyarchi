@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { PiCakeThin } from 'react-icons/pi'
 import { VscVerified } from 'react-icons/vsc'
+import Followers from "@/components/ui/Followers";
 
 export default async function Profile() {
   const session = await auth.api.getSession({
@@ -76,28 +77,11 @@ export default async function Profile() {
         </p>
       </div>
 
-      <div className='relative w-full max-w-2xl flex justify-around items-center mt-4'>
-        <button className='relative text-xs translate-x-[-25%] rounded-l-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center'>
-          Followers
-          <span className='absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl'>
-            999
-          </span>
-        </button>
-
-        <button className='relative text-xs translate-x-[-25%] rounded-l-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center'>
-          Following
-          <span className='absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl'>
-            999
-          </span>
-        </button>
-
-        <button className='relative text-xs translate-x-[-25%] rounded-l-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center'>
-          Clients
-          <span className='absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl'>
-            999
-          </span>
-        </button>
-      </div>
+      <Followers
+        userId={session.user.id}
+        followers={session.user.followers ?? 0}
+        following={session.user.following ?? 0}
+      />
 
       <div className='relative w-full max-w-xs flex flex-col justify-center items-center mt-4 gap-2'>
         <p className='relative w-full text-center text-lg underline text-shadow-xs text-shadow-stone-500 fancyFont italic shadow shadow-stone-500 rounded-t-full'>Links</p>
