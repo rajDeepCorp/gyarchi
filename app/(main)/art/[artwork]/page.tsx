@@ -1,4 +1,3 @@
-
 // app/(main)/art/[artwork]/page.tsx
 
 import Image from "next/image";
@@ -10,6 +9,8 @@ import { adminDb } from "@/firebaseAdmin";
 import { auth } from "@/lib/auth";
 import PostButtons from "@/components/ui/PostButtons";
 import ArtworkViewer from "@/components/ui/ArtworkViewer";
+import { MdArrowForward, MdOutlineNextPlan } from "react-icons/md";
+import ArtworkDescription from "@/components/ui/ArtworkDescription";
 
 type ArtworkPageProps = {
     params: Promise<{
@@ -32,10 +33,7 @@ type Post = {
     tags: string[];
 };
 
-type RelatedPost = Post & {
-    id: string;
-    score: number;
-};
+type RelatedPost = Post & { id: string; score: number; };
 
 export async function generateMetadata({
     params,
@@ -56,7 +54,6 @@ export async function generateMetadata({
     }
 
     const post = snapshot.val() as Post;
-
     const title = `${post.title} by ${post.username} | GyArchi`;
 
     const description =
@@ -132,8 +129,8 @@ export default async function Artwork({
 }: ArtworkPageProps) {
     const { artwork } = await params;
     const snapshot = await adminDb.ref(`posts/${artwork}`).get();
-    if (!snapshot.exists()) { notFound(); }
 
+    if (!snapshot.exists()) { notFound(); }
     const post = snapshot.val() as Post;
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -145,28 +142,21 @@ export default async function Artwork({
     const gotted = !!(userId && post.gotBy?.[userId]);
 
     // Related Posts
-    // Related Posts
     const allSnapshot = await adminDb.ref("posts").get();
-
     let relatedPosts: RelatedPost[] = [];
-
     if (allSnapshot.exists()) {
         const data = allSnapshot.val();
-
         const currentTags = new Set(post.tags ?? []);
-
         relatedPosts = Object.entries(data)
             .map(([id, value]) => {
                 const item = {
                     id,
                     ...(value as Post),
                 };
-
                 const score = item.tags?.reduce(
                     (count, tag) => count + (currentTags.has(tag) ? 1 : 0),
                     0
                 ) ?? 0;
-
                 return {
                     ...item,
                     score,
@@ -177,7 +167,6 @@ export default async function Artwork({
                 if (b.score !== a.score) {
                     return b.score - a.score;
                 }
-
                 return b.createdAt - a.createdAt;
             });
     }
@@ -193,7 +182,7 @@ export default async function Artwork({
                 fill
                 priority
                 sizes="100svw"
-                className="object-cover"
+                className="object-center object-contain"
             />
 
             {/* Dark Gradient */}
@@ -231,38 +220,22 @@ export default async function Artwork({
                         >
                             {post.username}
                         </Link>
-
                         <h1 className="mt-3 text-3xl font-bold text-white drop-shadow">
                             {post.title}
                         </h1>
-
-                        {post.description && (
-                            <p className="mt-3 max-w-2xl text-white/90">
-                                {post.description}
-                            </p>
-                        )}
-
-                        {post.tags?.length > 0 && (
-                            <div className="mt-4 flex flex-wrap gap-2">
-                                {post.tags.map((tag) => (
-                                    <span
-                                        key={tag}
-                                        className="rounded-full bg-white/15 px-3 py-1 text-sm text-white backdrop-blur-md"
-                                    >
-                                        #{tag}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
+                        <ArtworkDescription
+                            description={post.description}
+                            tags={post.tags}
+                        />
                     </div>
                 </div>
             </ArtworkViewer>
             {nextRelatedPost && (
                 <Link
                     href={`/art/${nextRelatedPost.id}`}
-                    className="absolute bottom-4 right-4 z-50 rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-black/60"
+                    className="absolute bottom-4 right-4 z-50 rounded-full shadow shadow-stone-500 bg-black/40 px-4 py-2 text-md font-medium text-white backdrop-blur-md transition hover:bg-black/60"
                 >
-                    Next →
+                    <MdArrowForward />
                 </Link>
             )}
         </main>
