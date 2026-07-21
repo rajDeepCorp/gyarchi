@@ -15,6 +15,9 @@ const Followers = ({ followers, following, userId }: Props) => {
     const [followersCount, setFollowersCount] = useState(followers);
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [openModal, setOpenModal] = useState<"followers" | "following" | null>(null);
+    const [users, setUsers] = useState<any[]>([]);
+    const [modalLoading, setModalLoading] = useState(false);
 
     useEffect(() => {
         const checkFollowing = async () => {
@@ -33,6 +36,30 @@ const Followers = ({ followers, following, userId }: Props) => {
 
         checkFollowing();
     }, [userId]);
+
+    useEffect(() => {
+        if (!openModal) return;
+
+        const loadUsers = async () => {
+            try {
+                setModalLoading(true);
+
+                const res = await fetch(
+                    `/api/user/follow-list?userId=${userId}&type=${openModal}`
+                );
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+
+                setUsers(data.users);
+            } finally {
+                setModalLoading(false);
+            }
+        };
+
+        loadUsers();
+    }, [openModal, userId]);
 
     const handleFollow = async () => {
         if (loading) return;
@@ -75,6 +102,44 @@ const Followers = ({ followers, following, userId }: Props) => {
         }
     };
 
+    const handleUserFollow = async (
+        targetUserId: string,
+        following: boolean
+    ) => {
+        try {
+            const res = await fetch("/api/auth/update-followers", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId: targetUserId,
+                    action: following ? "unfollow" : "follow",
+                }),
+            });
+
+            if (res.status === 401) {
+                toast.error("Please Sign in to Follow");
+                return;
+            }
+
+            if (!res.ok) return;
+
+            setUsers((prev) =>
+                prev.map((user) =>
+                    user.userId === targetUserId
+                        ? {
+                            ...user,
+                            following: !following,
+                        }
+                        : user
+                )
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div className="relative w-full max-w-2xl flex justify-around items-center mt-4">
             <button
@@ -87,14 +152,24 @@ const Followers = ({ followers, following, userId }: Props) => {
             >
                 {loading ? "..." : isFollowing ? "Followers" : "Follow"}
 
-                <span className="absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
+                <span
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenModal("followers");
+                    }}
+                    className="absolute right-0 z-50 px-2 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
                     {followersCount}
                 </span>
             </button>
 
             <button className="relative text-xs translate-x-[-25%] rounded-l-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
                 Following
-                <span className="absolute right-0 px-1 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
+                <span
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenModal("following");
+                    }}
+                    className="absolute right-0 z-50 px-2 translate-x-[105%] shadow py-1 shadow-stone-500 text-xs rounded-r-2xl">
                     {following}
                 </span>
             </button>
@@ -102,18 +177,61 @@ const Followers = ({ followers, following, userId }: Props) => {
             <button className="relative text-xs translate-x-[-25%] rounded-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
                 Hire
             </button>
-            <div className="fixed mx-auto rounded-2xl py-4 px-2 z-50 bg-background max-w-lg min-w-96 shadow shadow-stone-500 flex flex-col justify-start items-center gap-2 max-h-72 overflow-y-scroll">
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
-            </div>
+
+            {openModal && (
+                <div
+                    className="fixed inset-0 z-50 bg-black/40 flex justify-center items-center"
+                    onClick={() => setOpenModal(null)}
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="rounded-2xl py-4 px-3 bg-background w-105 max-h-125 overflow-y-auto shadow shadow-stone-500"
+                    >
+                        <div className="flex justify-between items-center mb-3">
+                            <h2 className="font-semibold">
+                                {openModal === "followers"
+                                    ? "Followers"
+                                    : "Following"}
+                            </h2>
+
+                            <button onClick={() => setOpenModal(null)}>
+                                ✕
+                            </button>
+                        </div>
+
+                        {modalLoading ? (
+                            <p>Loading...</p>
+                        ) : users.length === 0 ? (
+                            <p>No users found.</p>
+                        ) : (
+                            users.map((user) => (
+                                <div
+                                    key={user.userId}
+                                    className="flex justify-between items-center py-2 border-b"
+                                >
+                                    <div>
+                                        <a
+                                            href={`/${user.username}`}
+                                            className="font-medium hover:underline"
+                                        >
+                                            {user.name}
+                                        </a>
+                                    </div>
+
+                                    <button
+                                        onClick={() =>
+                                            handleUserFollow(user.userId, user.following)
+                                        }
+                                        className="text-xs px-3 py-1 rounded-full shadow shadow-stone-500"
+                                    >
+                                        {user.following ? "Following" : "Follow"}
+                                    </button>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

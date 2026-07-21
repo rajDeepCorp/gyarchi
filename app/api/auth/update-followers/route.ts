@@ -69,6 +69,28 @@ export async function POST(req: NextRequest) {
 
         const alreadyFollowing = await followingRef.get();
 
+        const currentUserData = currentUser.username
+            ? {
+                  userId: currentUserId,
+                  username: currentUser.username,
+                  name: currentUser.name,
+              }
+            : {
+                  userId: currentUserId,
+                  name: currentUser.name,
+              };
+
+        const targetUserData = targetUser.username
+            ? {
+                  userId: targetUserId,
+                  username: targetUser.username,
+                  name: targetUser.name,
+              }
+            : {
+                  userId: targetUserId,
+                  name: targetUser.name,
+              };
+
         if (action === "follow") {
             if (alreadyFollowing.exists()) {
                 return NextResponse.json({
@@ -96,15 +118,9 @@ export async function POST(req: NextRequest) {
                     }
                 ),
 
-                followersRef.set({
-                    userId: currentUserId,
-                    name: currentUser.name,
-                }),
+                followersRef.set(currentUserData),
 
-                followingRef.set({
-                    userId: targetUserId,
-                    name: targetUser.name,
-                }),
+                followingRef.set(targetUserData),
             ]);
 
             return NextResponse.json({
