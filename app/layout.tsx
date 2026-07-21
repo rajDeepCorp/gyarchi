@@ -1,12 +1,14 @@
 // app/layout.tsx
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport  } from "next";
 import { Poppins, Varela_Round } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import SideNavbar from "@/components/navigation/SideNavbar";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import ServiceWorker from "@/components/ServiceWorker";
+import InstallAppButton from "@/components/ui/InstallAppButton";
 
 
 const poppinsFont = Poppins({
@@ -89,11 +91,21 @@ export const metadata: Metadata = {
     follow: true,
   },
 
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "GyArchi",
+  },
+
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
     apple: "/Logo.png",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
 };
 
 export default async function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
@@ -106,6 +118,8 @@ export default async function RootLayout({ children, }: Readonly<{ children: Rea
       className={`${poppinsFont.variable} ${varelaRoundFont.variable} min-h-svh min-w-svw antialiased`}
     >
       <body className="min-h-full flex flex-col shadow-inner shadow-stone-500 m-1 p-2 rounded-2xl">
+        <ServiceWorker />
+        <InstallAppButton />
         {session && <SideNavbar />}        
         {children}
         <Toaster
