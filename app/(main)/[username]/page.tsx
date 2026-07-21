@@ -44,8 +44,7 @@ export async function generateMetadata({
 
   const description =
     user.bio?.trim() ||
-    `${user.name} on GyArchi • ${user.followers ?? 0} followers • ${
-      user.following ?? 0
+    `${user.name} on GyArchi • ${user.followers ?? 0} followers • ${user.following ?? 0
     } following`;
 
   return {
@@ -179,9 +178,9 @@ export default async function UserProfile({ params }: Props) {
       </div>
 
       <Followers
+        userId={user._id.toString()}
         followers={user.followers ?? 0}
         following={user.following ?? 0}
-        username={user.username}
       />
 
       <div className="relative w-full max-w-xs flex flex-col justify-center items-center mt-4 gap-2">

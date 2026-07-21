@@ -229,7 +229,7 @@ const FacePic = ({ user }: FacePicProps) => {
       </div>
 
       <div className={`${mainDivStyles} mt-4`}>
-        <div className={`${subDivStyles} items-start`}>
+        <div className={`${subDivStyles} items-end`}>
           <label htmlFor="address" className={`${labelStyles}`}>Update Address</label>
           <div className={`${inputWraperStyles}`}>
             <input

@@ -53,7 +53,7 @@ export default async function Profile() {
         </div>
         <p className='relative text-xl tracking-widest text-shadow-stone-500 text-shadow-xs opacity-90 fancyFont'>{session.user.name}</p>
         <p className='relative max-w-fit text-center flex justify-start items-center text-md italic tracking-tighter leading-2 text-shadow-stone-500 text-shadow-xs'>
-          {session.user.username || "Guest"}
+          {session.user.username || null}
           {session.user.username?.trim() && session.user.emailVerified && (
             <span className="relative -translate-y-1/3">
               <VscVerified />

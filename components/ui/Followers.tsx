@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
+    userId: string;
     followers: number;
     following: number;
-    username: string;
 };
 
-const Followers = ({ followers, following, username }: Props) => {
+const Followers = ({ followers, following, userId }: Props) => {
     const [followersCount, setFollowersCount] = useState(followers);
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ const Followers = ({ followers, following, username }: Props) => {
         const checkFollowing = async () => {
             try {
                 const res = await fetch(
-                    `/api/auth/update-followers?username=${encodeURIComponent(username)}`
+                    `/api/auth/update-followers?userId=${userId}`
                 );
 
                 if (!res.ok) return;
@@ -32,7 +32,7 @@ const Followers = ({ followers, following, username }: Props) => {
         };
 
         checkFollowing();
-    }, [username]);
+    }, [userId]);
 
     const handleFollow = async () => {
         if (loading) return;
@@ -46,7 +46,7 @@ const Followers = ({ followers, following, username }: Props) => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    username,
+                    userId,
                     action: isFollowing ? "unfollow" : "follow",
                 }),
             });
@@ -102,6 +102,18 @@ const Followers = ({ followers, following, username }: Props) => {
             <button className="relative text-xs translate-x-[-25%] rounded-2xl px-2 shadow py-1 shadow-stone-500 flex justify-center items-center">
                 Hire
             </button>
+            <div className="fixed mx-auto rounded-2xl py-4 px-2 z-50 bg-background max-w-lg min-w-96 shadow shadow-stone-500 flex flex-col justify-start items-center gap-2 max-h-72 overflow-y-scroll">
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+                <div className="relative w-72 flex justify-between items-center self-center"><span>Name</span><button>Follow</button></div>
+            </div>
         </div>
     );
 };

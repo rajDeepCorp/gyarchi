@@ -2,69 +2,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 import { adminDb } from "@/firebaseAdmin";
 
 const client = new MongoClient(process.env.MONGODB_URI as string);
-
-export async function GET(req: NextRequest) {
-    try {
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        });
-
-        if (!session) {
-            return NextResponse.json(
-                { following: false },
-                { status: 401 }
-            );
-        }
-
-        const username = req.nextUrl.searchParams.get("username");
-
-        if (!username) {
-            return NextResponse.json(
-                { following: false },
-                { status: 400 }
-            );
-        }
-
-        await client.connect();
-
-        const db = client.db();
-
-        const currentUserId = session.user.id;
-
-        const targetUser = await db.collection("user").findOne({
-            username,
-        });
-
-        if (!targetUser) {
-            return NextResponse.json(
-                { following: false },
-                { status: 404 }
-            );
-        }
-
-        const targetUserId = targetUser._id.toString();
-
-        const snapshot = await adminDb
-            .ref(`following/${currentUserId}/${targetUserId}`)
-            .get();
-
-        return NextResponse.json({
-            following: snapshot.exists(),
-        });
-    } catch (error) {
-        console.error(error);
-
-        return NextResponse.json(
-            { following: false },
-            { status: 500 }
-        );
-    }
-}
 
 export async function POST(req: NextRequest) {
     try {
@@ -79,9 +21,9 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { username, action } = await req.json();
+        const { userId, action } = await req.json();
 
-        if (!username || !["follow", "unfollow"].includes(action)) {
+        if (!userId || !["follow", "unfollow"].includes(action)) {
             return NextResponse.json(
                 { error: "Invalid request" },
                 { status: 400 }
@@ -97,7 +39,7 @@ export async function POST(req: NextRequest) {
         });
 
         const targetUser = await db.collection("user").findOne({
-            username,
+            _id: new ObjectId(userId),
         });
 
         if (!currentUser || !targetUser) {
@@ -137,9 +79,7 @@ export async function POST(req: NextRequest) {
 
             await Promise.all([
                 db.collection("user").updateOne(
-                    {
-                        _id: targetUser._id,
-                    },
+                    { _id: targetUser._id },
                     {
                         $inc: {
                             followers: 1,
@@ -148,9 +88,7 @@ export async function POST(req: NextRequest) {
                 ),
 
                 db.collection("user").updateOne(
-                    {
-                        _id: currentUser._id,
-                    },
+                    { _id: currentUser._id },
                     {
                         $inc: {
                             following: 1,
@@ -160,12 +98,12 @@ export async function POST(req: NextRequest) {
 
                 followersRef.set({
                     userId: currentUserId,
-                    username: currentUser.username,
+                    name: currentUser.name,
                 }),
 
                 followingRef.set({
                     userId: targetUserId,
-                    username: targetUser.username,
+                    name: targetUser.name,
                 }),
             ]);
 
@@ -184,9 +122,7 @@ export async function POST(req: NextRequest) {
 
         await Promise.all([
             db.collection("user").updateOne(
-                {
-                    _id: targetUser._id,
-                },
+                { _id: targetUser._id },
                 {
                     $inc: {
                         followers: -1,
@@ -195,9 +131,7 @@ export async function POST(req: NextRequest) {
             ),
 
             db.collection("user").updateOne(
-                {
-                    _id: currentUser._id,
-                },
+                { _id: currentUser._id },
                 {
                     $inc: {
                         following: -1,
@@ -224,6 +158,47 @@ export async function POST(req: NextRequest) {
             {
                 status: 500,
             }
+        );
+    }
+}
+
+export async function GET(req: NextRequest) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session) {
+            return NextResponse.json(
+                { following: false },
+                { status: 401 }
+            );
+        }
+
+        const userId = req.nextUrl.searchParams.get("userId");
+
+        if (!userId) {
+            return NextResponse.json(
+                { following: false },
+                { status: 400 }
+            );
+        }
+
+        const currentUserId = session.user.id;
+
+        const snapshot = await adminDb
+            .ref(`following/${currentUserId}/${userId}`)
+            .get();
+
+        return NextResponse.json({
+            following: snapshot.exists(),
+        });
+    } catch (error) {
+        console.error(error);
+
+        return NextResponse.json(
+            { following: false },
+            { status: 500 }
         );
     }
 }
