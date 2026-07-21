@@ -103,7 +103,7 @@ export default async function RootLayout({ children, }: Readonly<{ children: Rea
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${poppinsFont.variable} ${varelaRoundFont.variable} h-full antialiased`}
+      className={`${poppinsFont.variable} ${varelaRoundFont.variable} h-svh w-svw antialiased`}
     >
       <body className="min-h-full flex flex-col shadow-inner shadow-stone-500 m-1 p-2 rounded-2xl">
         {session && <SideNavbar />}        

@@ -95,7 +95,7 @@ export default function SearchFeed({
                     <Link
                         key={post.id}
                         href={`/art/${post.id}`}
-                        className="block break-inside-avoid mb-4"
+                        className="mb-4 inline-block w-full break-inside-avoid"
                     >
                         <Image
                             width={720}
@@ -103,7 +103,7 @@ export default function SearchFeed({
                             src={post.imageUrl}
                             alt={post.title || "Artwork"}
                             sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, (max-width:1536px) 33vw, 20vw"
-                            className="rounded-xl shadow shadow-stone-500 hover:opacity-90 transition"
+                            className="w-full h-auto rounded-xl shadow shadow-stone-500 hover:opacity-90 transition"
                         />
                     </Link>
                 ))}

@@ -7,10 +7,8 @@ export default async function Home() {
     const snapshot = await adminDb.ref("posts").get();
 
     let posts: any[] = [];
-
     if (snapshot.exists()) {
         const data = snapshot.val();
-
         posts = Object.entries(data)
             .map(([id, post]: any) => ({
                 id,
@@ -20,7 +18,6 @@ export default async function Home() {
                 const likes = post.likes || 0;
                 const saves = post.saves || 0;
                 const got = post.got || 0;
-
                 const now = Date.now();
                 const ageInDays =
                     (now - (post.createdAt || now)) /
