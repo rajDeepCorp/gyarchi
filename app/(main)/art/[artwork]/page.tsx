@@ -190,7 +190,6 @@ export default async function Artwork({
                     src={post.mediaUrl}
                     autoPlay
                     loop
-                    muted
                     playsInline
                     className="absolute inset-0 h-full w-full object-contain"
                 />
