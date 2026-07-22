@@ -12,6 +12,7 @@ import ArtworkViewer from "@/components/ui/ArtworkViewer";
 import { MdArrowForward, MdOutlineNextPlan } from "react-icons/md";
 import ArtworkDescription from "@/components/ui/ArtworkDescription";
 import { GiCrossMark } from "react-icons/gi";
+import ArtworkMedia from "@/components/ui/ArtworkMedia";
 
 type ArtworkPageProps = {
     params: Promise<{
@@ -187,15 +188,7 @@ export default async function Artwork({
         <main className="fixed top-0 left-0 h-screen min-h-svh min-w-svw w-screen overflow-hidden bg-black z-50">
             {/* Background Artwork */}
             {post.mediaType === "video" ? (
-                <video
-                    id="art-video"
-                    src={post.mediaUrl}
-                    autoPlay
-                    loop
-                    playsInline
-                    preload="metadata"
-                    className="absolute inset-0 h-full w-full object-contain"
-                />
+                <ArtworkMedia src={post.mediaUrl} artworkId={artwork} />
             ) : (
                 <Image
                     src={post.mediaUrl}

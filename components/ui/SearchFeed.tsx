@@ -1,7 +1,6 @@
 // components/ui/SearchFeed.tsx
 
 "use client";
-
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,23 +18,16 @@ type Post = {
     createdAt?: number;
 };
 
-export default function SearchFeed({
-    posts,
-}: {
-    posts: Post[];
-}) {
+export default function SearchFeed({ posts, }: { posts: Post[]; }) {
     const [search, setSearch] = useState("");
-
     const filteredPosts = useMemo(() => {
         const query = search.trim().toLowerCase();
 
         // Search box empty hai to original order hi rakho
         if (!query) return posts;
-
         return posts
             .map((post) => {
                 let score = 0;
-
                 const title = (post.title || "").toLowerCase();
                 const description = (post.description || "").toLowerCase();
                 const username = (post.username || "").toLowerCase();
@@ -61,10 +53,7 @@ export default function SearchFeed({
                 // ---------- DESCRIPTION ----------
                 if (description.includes(query)) score += 100;
 
-                return {
-                    post,
-                    score,
-                };
+                return { post, score, };
             })
             // sirf matched posts
             .filter((item) => item.score > 0)
