@@ -193,6 +193,7 @@ export default async function Artwork({
                     autoPlay
                     loop
                     playsInline
+                    preload="metadata"
                     className="absolute inset-0 h-full w-full object-contain"
                 />
             ) : (

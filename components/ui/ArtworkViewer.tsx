@@ -41,7 +41,6 @@ export default function ArtworkViewer({ children }: Props) {
 
   const handleTap = (e: React.MouseEvent<HTMLDivElement>) => {
     const video = document.querySelector("video");
-
     if (video) {
       if (video.paused) {
         video.play().catch(() => { });
@@ -49,9 +48,7 @@ export default function ArtworkViewer({ children }: Props) {
         video.pause();
       }
     }
-
     setShowUI(true);
-
     if (!isHolding) {
       startHideTimer();
     }
@@ -80,8 +77,8 @@ export default function ArtworkViewer({ children }: Props) {
     >
       <div
         className={`absolute inset-0 z-50 transition-opacity duration-300 ${showUI
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
           }`}
       >
         {children}
