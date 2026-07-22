@@ -1,6 +1,6 @@
 // public/sw.js
 
-const CACHE_NAME = "gyarchi-v2";
+const CACHE_NAME = "gyarchi-v3";
 
 const STATIC_ASSETS = [
   "/",
@@ -38,54 +38,77 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   // ===========================
-  // Never cache videos
+  // Never cache third-party requests
   // ===========================
-  if (
-    request.destination === "video" ||
-    request.headers.has("range") ||
-    url.pathname.endsWith(".mp4") ||
-    url.pathname.endsWith(".webm") ||
-    url.pathname.endsWith(".mov") ||
-    url.pathname.endsWith(".mkv")
-  ) {
+  if (url.origin !== self.location.origin) {
     return;
   }
 
   // ===========================
   // Never cache APIs
   // ===========================
+  if (request.url.includes("/api/")) {
+    return;
+  }
+
+  // ===========================
+  // Never cache ANY media
+  // ===========================
+  const mediaExtensions = [
+    ".mp4",
+    ".webm",
+    ".mov",
+    ".mkv",
+    ".avi",
+    ".m4v",
+    ".mp3",
+    ".wav",
+    ".ogg",
+    ".aac",
+    ".flac",
+    ".m4a",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+    ".svg",
+    ".avif",
+    ".bmp",
+    ".ico",
+  ];
+
   if (
-    url.pathname.startsWith("/api") ||
-    url.hostname.includes("firebase") ||
-    url.hostname.includes("googleapis.com") ||
-    url.hostname.includes("firebasedatabase.app") ||
-    url.hostname.includes("vercel-storage.com")
+    request.destination === "video" ||
+    request.destination === "audio" ||
+    request.destination === "image" ||
+    request.headers.has("range") ||
+    mediaExtensions.some((ext) =>
+      url.pathname.toLowerCase().endsWith(ext)
+    )
   ) {
     return;
   }
 
   // ===========================
-  // HTML pages
+  // HTML
   // Network First
   // ===========================
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, copy);
-          });
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, copy);
+            });
+          }
 
           return response;
         })
         .catch(async () => {
-          const cached = await caches.match(request);
-
-          if (cached) return cached;
-
-          return caches.match("/");
+          return (await caches.match(request)) || caches.match("/");
         })
     );
 
@@ -93,9 +116,16 @@ self.addEventListener("fetch", (event) => {
   }
 
   // ===========================
-  // Static assets
-  // Cache First
+  // Only cache CSS, JS & Fonts
   // ===========================
+  if (
+    request.destination !== "style" &&
+    request.destination !== "script" &&
+    request.destination !== "font"
+  ) {
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;

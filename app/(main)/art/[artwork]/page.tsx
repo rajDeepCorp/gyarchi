@@ -188,6 +188,7 @@ export default async function Artwork({
             {/* Background Artwork */}
             {post.mediaType === "video" ? (
                 <video
+                    id="art-video"
                     src={post.mediaUrl}
                     autoPlay
                     loop
@@ -211,9 +212,9 @@ export default async function Artwork({
             <ArtworkViewer>
                 {/* Top Bar */}
                 <div className="absolute top-0 left-0 z-50 flex w-full items-center justify-between p-0">
-                    <a href="/" className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-black/60" >
+                    <Link href="/" className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-black/60" >
                         <GiCrossMark />
-                    </a>
+                    </Link>
                 </div>
 
                 {/* Right Side Buttons */}

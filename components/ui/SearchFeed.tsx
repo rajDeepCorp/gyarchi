@@ -97,6 +97,7 @@ export default function SearchFeed({
                 {filteredPosts.map((post) => (
                     <Link
                         key={post.id}
+                        prefetch={false}
                         href={`/art/${post.id}`}
                         className="relative  mb-4 inline-block w-full break-inside-avoid"
                     >
