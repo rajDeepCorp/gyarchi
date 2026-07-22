@@ -6,7 +6,9 @@ import UserPosts from "@/components/ui/UserPosts";
 
 type Post = {
     id: string;
-    imageUrl: string;
+    mediaUrl: string;
+    mediaType: "image" | "video";
+    thumbnailUrl?: string | null;
     title: string;
 };
 

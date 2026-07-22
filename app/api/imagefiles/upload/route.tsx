@@ -20,6 +20,11 @@ export async function POST(request: NextRequest) {
                         "image/jpeg",
                         "image/png",
                         "image/webp",
+
+                        // Videos
+                        "video/mp4",
+                        "video/webm",
+                        "video/quicktime", // .mov
                     ],
 
                     tokenPayload: JSON.stringify({}),

@@ -6,9 +6,7 @@ import { auth } from "@/lib/auth";
 import { adminDb } from "@/firebaseAdmin";
 
 export async function POST(req: NextRequest) {
-
     try {
-
         const session = await auth.api.getSession({
             headers: await headers(),
         });
@@ -21,15 +19,34 @@ export async function POST(req: NextRequest) {
         }
 
         const {
-            imageUrl,
+            mediaUrl,
+            thumbnailUrl,
+            mediaType,
             title,
             description,
             tags,
         } = await req.json();
 
-        if (!imageUrl) {
+        if (!mediaUrl) {
             return NextResponse.json(
-                { error: "Image is required" },
+                { error: "Media is required" },
+                { status: 400 }
+            );
+        }
+
+        if (
+            mediaType !== "image" &&
+            mediaType !== "video"
+        ) {
+            return NextResponse.json(
+                { error: "Invalid media type" },
+                { status: 400 }
+            );
+        }
+
+        if (mediaType === "video" && !thumbnailUrl) {
+            return NextResponse.json(
+                { error: "Video thumbnail is required" },
                 { status: 400 }
             );
         }
@@ -37,7 +54,9 @@ export async function POST(req: NextRequest) {
         const ref = adminDb.ref("posts");
 
         await ref.push({
-            imageUrl,
+            mediaUrl,
+            thumbnailUrl: thumbnailUrl || null,
+            mediaType,
             username: session.user.username,
             title: title || "",
             description: description || "",
@@ -56,7 +75,6 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error) {
-
         console.error(error);
 
         return NextResponse.json(

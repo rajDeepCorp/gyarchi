@@ -21,7 +21,9 @@ type ArtworkPageProps = {
 type Post = {
     title: string;
     description?: string;
-    imageUrl: string;
+    mediaUrl: string;
+    mediaType: "image" | "video";
+    thumbnailUrl?: string | null;
     username: string;
     likes: number;
     likedBy?: Record<string, true>;
@@ -101,7 +103,10 @@ export async function generateMetadata({
             description,
             images: [
                 {
-                    url: post.imageUrl,
+                    url:
+                        post.mediaType === "video"
+                            ? (post.thumbnailUrl || post.mediaUrl)
+                            : post.mediaUrl,
                     width: 1200,
                     height: 1200,
                     alt: post.title,
@@ -113,7 +118,11 @@ export async function generateMetadata({
             card: "summary_large_image",
             title,
             description,
-            images: [post.imageUrl],
+            images: [
+                post.mediaType === "video"
+                    ? (post.thumbnailUrl || post.mediaUrl)
+                    : post.mediaUrl,
+            ],
             creator: post.username,
         },
 
@@ -176,14 +185,25 @@ export default async function Artwork({
     return (
         <main className="fixed top-0 left-0 h-screen min-h-svh min-w-svw w-screen overflow-hidden bg-black z-50">
             {/* Background Artwork */}
-            <Image
-                src={post.imageUrl}
-                alt={post.title}
-                fill
-                priority
-                sizes="100svw"
-                className="object-center object-contain"
-            />
+            {post.mediaType === "video" ? (
+                <video
+                    src={post.mediaUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 h-full w-full object-contain"
+                />
+            ) : (
+                <Image
+                    src={post.mediaUrl}
+                    alt={post.title}
+                    fill
+                    priority
+                    sizes="100svw"
+                    className="object-center object-contain"
+                />
+            )}
 
             {/* Dark Gradient */}
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-black/30" />

@@ -6,7 +6,9 @@ import Link from "next/link";
 
 type Post = {
     id: string;
-    imageUrl: string;
+    mediaUrl: string;
+    mediaType: "image" | "video";
+    thumbnailUrl?: string | null;
     title: string;
 };
 
@@ -29,14 +31,24 @@ const UserPosts = ({ posts }: UserPostsProps) => {
                 <Link
                     key={post.id}
                     href={`/art/${post.id}`}
+                    className="relative inline-block"
                 >
                     <Image
                         width={720}
                         height={720}
-                        src={post.imageUrl}
+                        src={
+                            post.mediaType === "video"
+                                ? (post.thumbnailUrl || "/1.jpg")
+                                : post.mediaUrl
+                        }
                         alt={post.title || "Artwork"}
                         className="rounded-xl mb-4 shadow shadow-stone-500 hover:opacity-90 transition"
                     />
+                    {post.mediaType === "video" && (
+                        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                            ▶ VIDEO
+                        </div>
+                    )}
                 </Link>
             ))}
         </div>

@@ -1,6 +1,7 @@
 // app/(user)/post/page.tsx
 
 "use client";
+
 import Image from "next/image";
 import React, { useState } from "react";
 import { upload } from "@vercel/blob/client";
@@ -8,23 +9,68 @@ import { toast } from "sonner";
 
 export default function PostPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [image, setImage] = useState("/1.jpg");
+  const [preview, setPreview] = useState("/1.jpg");
+  const [isVideo, setIsVideo] = useState(false);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [uploading, setUploading] = useState(false);
 
+  const generateVideoThumbnail = (videoFile: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+
+      video.preload = "metadata";
+      video.muted = true;
+      video.playsInline = true;
+      video.src = URL.createObjectURL(videoFile);
+
+      video.onloadeddata = () => {
+        video.currentTime = 0;
+      };
+
+      video.onseeked = () => {
+        const canvas = document.createElement("canvas");
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+          reject(new Error("Canvas not supported"));
+          return;
+        }
+
+        ctx.drawImage(video, 0, 0);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error("Thumbnail generation failed"));
+              return;
+            }
+
+            resolve(blob);
+          },
+          "image/jpeg",
+          0.9
+        );
+      };
+
+      video.onerror = reject;
+    });
+  };
+
   const addTag = () => {
     const tag = tagInput.trim().toLowerCase();
-
     if (!tag) return;
-
     if (tags.includes(tag)) {
       setTagInput("");
       return;
     }
-
     setTags((prev) => [...prev, tag]);
     setTagInput("");
   };
@@ -33,24 +79,33 @@ export default function PostPage() {
     setTags((prev) => prev.filter((t) => t !== tag));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMediaChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const selectedFile = e.target.files?.[0];
+
     if (!selectedFile) return;
 
     setFile(selectedFile);
-    setImage(URL.createObjectURL(selectedFile));
+
+    const url = URL.createObjectURL(selectedFile);
+
+    setPreview(url);
+
+    setIsVideo(selectedFile.type.startsWith("video/"));
   };
 
   const handleUpload = async () => {
     if (!file) {
-      alert("Please select an image.");
+      alert("Please select an image or video.");
       return;
     }
 
     try {
       setUploading(true);
 
-      const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const extension =
+        file.name.split(".").pop()?.toLowerCase() || "jpg";
 
       const slug = title
         .trim()
@@ -65,7 +120,31 @@ export default function PostPage() {
         handleUploadUrl: "/api/imagefiles/upload",
       });
 
-      const imageUrl = blob.url;
+      const mediaUrl = blob.url;
+      let thumbnailUrl: string | null = null;
+
+      if (isVideo) {
+        const thumbnailBlob = await generateVideoThumbnail(file);
+
+        const thumbnailFile = new File(
+          [thumbnailBlob],
+          `${slug}-thumbnail-${Date.now()}.jpg`,
+          {
+            type: "image/jpeg",
+          }
+        );
+
+        const thumbnailUpload = await upload(
+          thumbnailFile.name,
+          thumbnailFile,
+          {
+            access: "public",
+            handleUploadUrl: "/api/imagefiles/upload",
+          }
+        );
+
+        thumbnailUrl = thumbnailUpload.url;
+      }
 
       const response = await fetch("/api/posts", {
         method: "POST",
@@ -73,7 +152,9 @@ export default function PostPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          imageUrl,
+          mediaUrl,
+          thumbnailUrl,
+          mediaType: isVideo ? "video" : "image",
           title,
           description,
           tags,
@@ -89,7 +170,8 @@ export default function PostPage() {
       toast("Post uploaded successfully!");
 
       setFile(null);
-      setImage("/1.jpg");
+      setPreview("/1.jpg");
+      setIsVideo(false);
       setTitle("");
       setDescription("");
       setTags([]);
@@ -102,27 +184,38 @@ export default function PostPage() {
     }
   };
 
-
   return (
     <div className="relative shadow-inner shadow-stone-500 p-2 m-1 rounded-4xl">
 
-      {/* Image Preview */}
+      {/* Preview */}
       <div className="relative shadow shadow-stone-500 p-2 m-1 rounded-4xl flex justify-center">
-        <Image
-          src={image}
-          width={720}
-          height={720}
-          alt="Preview"
-          className="rounded-3xl object-cover"
-        />
+
+        {isVideo ? (
+          <video
+            src={preview}
+            controls
+            playsInline
+            muted
+            className="rounded-3xl max-h-180"
+          />
+        ) : (
+          <Image
+            src={preview}
+            width={720}
+            height={720}
+            alt="Preview"
+            className="rounded-3xl object-cover"
+          />
+        )}
+
       </div>
 
       {/* File Input */}
       <div className="relative shadow shadow-stone-500 p-2 m-1 rounded-4xl">
         <input
           type="file"
-          accept="image/*"
-          onChange={handleImageChange}
+          accept="image/*,video/*"
+          onChange={handleMediaChange}
         />
       </div>
 
@@ -150,6 +243,7 @@ export default function PostPage() {
 
       {/* Tags */}
       <div className="relative shadow shadow-stone-500 p-2 m-1 rounded-4xl">
+
         <div className="flex flex-wrap gap-2 mb-2">
           {tags.map((tag) => (
             <button
@@ -188,6 +282,7 @@ export default function PostPage() {
           }}
           className="w-full outline-none"
         />
+
       </div>
 
       {/* Upload Button */}
