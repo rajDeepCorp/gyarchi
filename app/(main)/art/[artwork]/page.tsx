@@ -12,7 +12,6 @@ import ArtworkViewer from "@/components/ui/ArtworkViewer";
 import { MdArrowForward, MdOutlineNextPlan } from "react-icons/md";
 import ArtworkDescription from "@/components/ui/ArtworkDescription";
 import { GiCrossMark } from "react-icons/gi";
-import CloseArtworkButton from "@/components/ui/CloseArtworkButton";
 
 type ArtworkPageProps = {
     params: Promise<{
@@ -212,7 +211,9 @@ export default async function Artwork({
             <ArtworkViewer>
                 {/* Top Bar */}
                 <div className="absolute top-0 left-0 z-50 flex w-full items-center justify-between p-0">
-                    <CloseArtworkButton/>
+                    <a href="/" className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-black/60" >
+                        <GiCrossMark />
+                    </a>
                 </div>
 
                 {/* Right Side Buttons */}
