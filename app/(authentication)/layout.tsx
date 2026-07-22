@@ -1,0 +1,20 @@
+// app/(authentication)/layout.tsx
+
+import Navbar from "@/components/navigation/Navbar";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
+export default async function AuthLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
+    const session = await auth.api.getSession({ headers: await headers(), });
+
+    if (session) {
+        redirect('/');
+      }
+
+    return (
+        <main className="relative">
+            {children}
+        </main>
+    );
+}

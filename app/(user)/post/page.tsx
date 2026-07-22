@@ -50,7 +50,17 @@ export default function PostPage() {
     try {
       setUploading(true);
 
-      const blob = await upload(file.name, file, {
+      const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+
+      const slug = title
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+      const fileName = `${slug}-${Date.now()}.${extension}`;
+
+      const blob = await upload(fileName, file, {
         access: "public",
         handleUploadUrl: "/api/imagefiles/upload",
       });
