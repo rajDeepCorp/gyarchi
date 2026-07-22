@@ -85,12 +85,53 @@ export default function PostPage() {
     const selectedFile = e.target.files?.[0];
 
     if (!selectedFile) return;
+    // Image size limit: 2 MB
+    if (
+      selectedFile.type.startsWith("image/") &&
+      selectedFile.size > 2 * 1024 * 1024
+    ) {
+      toast("Image size must be 2 MB or less.");
+      e.target.value = "";
+      return;
+    }
+
+    // Video size limit: 100 MB
+    if (
+      selectedFile.type.startsWith("video/") &&
+      selectedFile.size > 100 * 1024 * 1024
+    ) {
+      toast("Video size must be 100 MB or less.");
+      e.target.value = "";
+      return;
+    }
 
     setFile(selectedFile);
 
     const url = URL.createObjectURL(selectedFile);
 
     setPreview(url);
+    if (selectedFile.type.startsWith("video/")) {
+      const video = document.createElement("video");
+
+      video.preload = "metadata";
+      video.src = url;
+
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(video.src);
+
+        if (video.duration > 120) {
+          toast("Video must be 2 minutes or less.");
+
+          setFile(null);
+          setPreview("/1.jpg");
+          setIsVideo(false);
+
+          e.target.value = "";
+
+          return;
+        }
+      };
+    }
 
     setIsVideo(selectedFile.type.startsWith("video/"));
   };

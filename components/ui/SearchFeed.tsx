@@ -5,6 +5,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { MdOutlineVideoStable } from "react-icons/md";
 
 type Post = {
     id: string;
@@ -112,8 +113,8 @@ export default function SearchFeed({
                             className="w-full h-auto rounded-xl shadow shadow-stone-500 hover:opacity-90 transition"
                         />
                         {post.mediaType === "video" && (
-                            <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                                ▶ VIDEO
+                            <div className="absolute top-2 right-2 bg-black/70 text-white text-sm px-2 py-1 rounded-full">
+                                <MdOutlineVideoStable />
                             </div>
                         )}
                     </Link>
