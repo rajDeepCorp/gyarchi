@@ -20,6 +20,12 @@ type Post = {
 
 export default function SearchFeed({ posts, }: { posts: Post[]; }) {
     const [search, setSearch] = useState("");
+    const [loaded, setLoaded] = useState<Record<string, boolean>>({});
+
+    const markLoaded = (id: string) => {
+        setLoaded((prev) => (prev[id] ? prev : { ...prev, [id]: true }));
+    };
+
     const filteredPosts = useMemo(() => {
         const query = search.trim().toLowerCase();
 
@@ -83,31 +89,45 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
             </div>
 
             <section className="columns-2 lg:columns-3 xl:columns-5 2xl:columns-7 gap-4">
-                {filteredPosts.map((post) => (
-                    <Link
-                        key={post.id}
-                        href={`/art/${post.id}`}
-                        className="relative  mb-4 inline-block w-full break-inside-avoid"
-                    >
-                        <Image
-                            width={720}
-                            height={720}
-                            src={
-                                post.mediaType === "video"
-                                    ? (post.thumbnailUrl || "/1.jpg")
-                                    : post.mediaUrl
-                            }
-                            alt={post.title || "Artwork"}
-                            sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, (max-width:1536px) 33vw, 20vw"
-                            className="w-full h-auto rounded-xl shadow shadow-stone-500 hover:opacity-90 transition"
-                        />
-                        {post.mediaType === "video" && (
-                            <div className="absolute top-2 right-2 bg-black/70 text-white text-sm px-2 py-1 rounded-full">
-                                <MdOutlineVideoStable />
-                            </div>
-                        )}
-                    </Link>
-                ))}
+                {filteredPosts.map((post) => {
+                    const isLoaded = !!loaded[post.id];
+                    return (
+                        <Link
+                            key={post.id}
+                            href={`/art/${post.id}`}
+                            className="relative  mb-4 inline-block w-full break-inside-avoid"
+                        >
+                            {/* Skeleton hamesha mounted rehta hai, sirf opacity se hide/show hota hai
+                                taaki server aur client ka tree structure kabhi mismatch na ho */}
+                            <div
+                                aria-hidden="true"
+                                className={`absolute inset-0 rounded-xl bg-stone-300 dark:bg-stone-700 transition-opacity duration-300 ${
+                                    isLoaded ? "opacity-0 pointer-events-none" : "opacity-100 animate-pulse"
+                                }`}
+                            />
+                            <Image
+                                width={720}
+                                height={720}
+                                src={
+                                    post.mediaType === "video"
+                                        ? (post.thumbnailUrl || "/1.jpg")
+                                        : post.mediaUrl
+                                }
+                                alt={post.title || "Artwork"}
+                                sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, (max-width:1536px) 33vw, 20vw"
+                                onLoad={() => markLoaded(post.id)}
+                                className={`relative w-full h-auto rounded-xl shadow shadow-stone-500 hover:opacity-90 transition-opacity duration-300 ${
+                                    isLoaded ? "opacity-100" : "opacity-0"
+                                }`}
+                            />
+                            {post.mediaType === "video" && (
+                                <div className="absolute top-2 right-2 bg-black/70 text-white text-sm px-2 py-1 rounded-full">
+                                    <MdOutlineVideoStable />
+                                </div>
+                            )}
+                        </Link>
+                    );
+                })}
             </section>
         </>
     );

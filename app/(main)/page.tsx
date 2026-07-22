@@ -5,7 +5,6 @@ import SearchFeed from "@/components/ui/SearchFeed";
 
 export default async function Home() {
     const snapshot = await adminDb.ref("posts").get();
-
     let posts: any[] = [];
     if (snapshot.exists()) {
         const data = snapshot.val();
@@ -22,9 +21,7 @@ export default async function Home() {
                 const ageInDays =
                     (now - (post.createdAt || now)) /
                     (1000 * 60 * 60 * 24);
-
                 let freshness = 0;
-
                 if (ageInDays <= 1) {
                     freshness = 100;
                 } else if (ageInDays <= 7) {
@@ -32,13 +29,11 @@ export default async function Home() {
                 } else if (ageInDays <= 30) {
                     freshness = 40;
                 }
-
                 const score =
                     likes * 2 +
                     saves * 5 +
                     got * 10 +
                     freshness;
-
                 return {
                     ...post,
                     score,
@@ -48,11 +43,9 @@ export default async function Home() {
                 if (b.score !== a.score) {
                     return b.score - a.score;
                 }
-
                 return b.createdAt - a.createdAt;
             });
     }
-
     return (
         <main className="flex flex-col items-center gap-6 mt-8">
             <SearchFeed posts={posts} />
