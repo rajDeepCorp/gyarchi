@@ -33,7 +33,6 @@ export const auth = betterAuth({
                                 Reset Password
                             </a>
                         </p>
-
                         <p>If you didn't request this, you can safely ignore this email.</p>
                     </div>
                 `,
@@ -63,6 +62,44 @@ export const auth = betterAuth({
             twitter: { type: "string", required: false, },
             linkedin: { type: "string", required: false, },
             website: { type: "string", required: false, },
+        },
+    },
+
+    // 👇 Naya part
+    databaseHooks: {
+        user: {
+            create: {
+                before: async (user) => {
+                    // Agar username already diya gaya hai (email/password signup se), touch mat karo
+                    if ((user as any).username) {
+                        return { data: user };
+                    }
+
+                    // Google signup ke case mein username missing hoga -> auto generate karo
+                    const base = (user.email?.split("@")[0] || "user")
+                        .toLowerCase()
+                        .replace(/[^a-z0-9_]/g, "");
+
+                    let generatedUsername = `@${base}`;
+                    let attempt = 0;
+
+                    // Uniqueness ensure karo DB me check karke
+                    while (
+                        await db.collection("user").findOne({ username: generatedUsername })
+                    ) {
+                        attempt += 1;
+                        const randomSuffix = Math.random().toString(36).slice(2, 6);
+                        generatedUsername = `@${base}${randomSuffix}${attempt}`;
+                    }
+
+                    return {
+                        data: {
+                            ...user,
+                            username: generatedUsername,
+                        },
+                    };
+                },
+            },
         },
     },
 });
