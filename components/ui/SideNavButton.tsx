@@ -37,7 +37,7 @@ const SideNavButton = ({
           exit={{ opacity: 0, scaleX: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
           onClick={handleOpen}
-          className="relative origin-center z-10 sm:p-4 p-3 scale-x-200"
+          className="relative origin-center z-20 sm:p-4 p-3 scale-x-200"
         >
           <LiaGripLinesSolid />
         </motion.button>

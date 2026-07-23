@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { CiCircleList } from "react-icons/ci";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { MdOutlineVideoStable } from "react-icons/md";
 
 type ReactionType = "like" | "save" | "got";
 
@@ -231,11 +232,11 @@ const UserPosts = ({ posts }: UserPostsProps) => {
                         />
                         {post.mediaType === "video" && (
                             <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                                ▶ VIDEO
+                                <MdOutlineVideoStable />
                             </div>
                         )}
 
-                        <details className="absolute top-2 left-2 p-1 rounded-full backdrop-blur-2xl shadow shadow-stone-500 z-50 bg-background">
+                        <details className="absolute top-2 left-2 p-1 rounded-full backdrop-blur-2xl shadow shadow-stone-500 bg-background">
                             <summary
                                 onClick={(e) => {
                                     e.preventDefault();
@@ -248,7 +249,7 @@ const UserPosts = ({ posts }: UserPostsProps) => {
                                 <CiCircleList />
                             </summary>
                             <ul
-                                className="absolute shadow-inner shadow-stone-500 px-10 py-4 rounded-2xl z-50 mt-5 bg-background"
+                                className="absolute shadow-inner shadow-stone-500 px-10 py-4 rounded-2xl mt-5 bg-background"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();

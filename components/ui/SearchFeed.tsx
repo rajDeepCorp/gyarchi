@@ -251,7 +251,7 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                         <Link
                             key={post.id}
                             href={`/art/${post.id}`}
-                            className="relative  mb-4 inline-block w-full break-inside-avoid"
+                            className="relative mb-4 inline-block w-full break-inside-avoid"
                         >
                             <div
                                 aria-hidden="true"
@@ -278,7 +278,7 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                                 </div>
                             )}
 
-                            <details className="absolute top-2 left-2 p-1 rounded-full backdrop-blur-2xl shadow shadow-stone-500 z-50 bg-background">
+                            <details className="absolute top-2 left-2 p-1 rounded-full backdrop-blur-2xl shadow shadow-stone-500 bg-background">
                                 <summary
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -291,7 +291,7 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                                     <CiCircleList />
                                 </summary>
                                 <ul
-                                    className="absolute shadow-inner shadow-stone-500 px-10 py-4 rounded-2xl z-50 mt-5 bg-background"
+                                    className="absolute shadow-inner shadow-stone-500 px-10 py-4 rounded-2xl mt-5 bg-background"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
