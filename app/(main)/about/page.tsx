@@ -60,7 +60,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="mb-4">
+    <main className="mb-4 max-w-xl mx-auto">
 
       <header className="w-full shadow shadow-stone-500 rounded-2xl p-3 mt-2 mb-4">
         <h1 className="text-4xl text-center text-shadow-stone-500 text-shadow-md my-2">
