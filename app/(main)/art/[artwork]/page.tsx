@@ -205,8 +205,8 @@ export default async function Artwork({
 
             <ArtworkViewer isVideo={post.mediaType === "video"}>
                 {/* Top Bar */}
-                <div className="absolute top-0 left-0 z-50 flex w-full items-center justify-between p-0">
-                    <Link href="/" className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-black/60" >
+                <div className="absolute top-2 left-2 z-50 flex w-full items-center justify-between p-0">
+                    <Link href="/" className="rounded-full bg-black/40 px-4 py-2 text-lg font-medium text-white backdrop-blur-md transition hover:bg-black/60" >
                         <GiCrossMark />
                     </Link>
                 </div>

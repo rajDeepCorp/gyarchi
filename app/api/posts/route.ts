@@ -87,3 +87,75 @@ export async function POST(req: NextRequest) {
         );
     }
 }
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { postId } = (await req.json()) as { postId: string };
+
+        if (!postId) {
+            return NextResponse.json(
+                { error: "postId is required" },
+                { status: 400 }
+            );
+        }
+
+        const postRef = adminDb.ref(`posts/${postId}`);
+        const snapshot = await postRef.get();
+
+        if (!snapshot.exists()) {
+            return NextResponse.json(
+                { error: "Post not found" },
+                { status: 404 }
+            );
+        }
+
+        const post = snapshot.val();
+
+        // Ownership check — sirf apna hi post delete kar sakte ho
+        if (post.username !== session.user.username) {
+            return NextResponse.json(
+                { error: "Forbidden" },
+                { status: 403 }
+            );
+        }
+
+        // Blob storage se media delete karo (media + thumbnail agar ho)
+        const { del } = await import("@vercel/blob");
+        const urlsToDelete = [post.mediaUrl, post.thumbnailUrl].filter(
+            (url): url is string => !!url
+        );
+
+        if (urlsToDelete.length > 0) {
+            try {
+                await del(urlsToDelete);
+            } catch (blobError) {
+                // Blob delete fail ho jaye to bhi DB se post hataana zaroori hai
+                console.error("Blob delete error:", blobError);
+            }
+        }
+
+        // Firebase se post entry delete karo
+        await postRef.remove();
+
+        return NextResponse.json({ success: true });
+
+    } catch (error) {
+        console.error(error);
+
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
+}
