@@ -43,15 +43,6 @@ export default function ArtworkViewer({ children, isVideo = false }: Props) {
     }, 3000);
   }, [isHolding]);
 
-  // Center icon ko baaki UI se pehle, jaldi hide karne ke liye alag timer
-  const flashCenterIcon = () => {
-    clearCenterTimer();
-    setShowCenterIcon(true);
-    centerTimerRef.current = setTimeout(() => {
-      setShowCenterIcon(false);
-    }, 500);
-  };
-
   useEffect(() => {
     startHideTimer();
 
@@ -67,10 +58,28 @@ export default function ArtworkViewer({ children, isVideo = false }: Props) {
     const video = document.querySelector("video");
     if (!video) return;
 
+    // Initial state set karo
     setIsPaused(video.paused);
+    if (video.paused) {
+      setShowCenterIcon(true);
+    }
 
-    const handlePlay = () => setIsPaused(false);
-    const handlePause = () => setIsPaused(true);
+    const handlePlay = () => {
+      setIsPaused(false);
+      // Playing hote hi icon flash karo, fir jaldi hide
+      clearCenterTimer();
+      setShowCenterIcon(true);
+      centerTimerRef.current = setTimeout(() => {
+        setShowCenterIcon(false);
+      }, 500);
+    };
+
+    const handlePause = () => {
+      setIsPaused(true);
+      // Paused hone par icon hamesha dikhna chahiye
+      clearCenterTimer();
+      setShowCenterIcon(true);
+    };
 
     video.addEventListener("play", handlePlay);
     video.addEventListener("pause", handlePause);
@@ -90,7 +99,6 @@ export default function ArtworkViewer({ children, isVideo = false }: Props) {
       } else {
         video.pause();
       }
-      flashCenterIcon();
     }
     setShowUI(true);
     if (!isHolding) {
@@ -119,7 +127,7 @@ export default function ArtworkViewer({ children, isVideo = false }: Props) {
       onPointerLeave={handlePointerUp}
       onTouchEnd={handlePointerUp}
     >
-      {/* Center Play/Pause Icon — fast, independent fade */}
+      {/* Center Play/Pause Icon */}
       {isVideo && (
         <div
           className={`pointer-events-none fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 text-5xl text-white transition-opacity duration-150 ${
@@ -130,7 +138,7 @@ export default function ArtworkViewer({ children, isVideo = false }: Props) {
         </div>
       )}
 
-      {/* Rest of the UI — slower fade, 3s timer */}
+      {/* Rest of the UI */}
       <div
         className={`absolute inset-0 z-50 transition-opacity duration-300 ${
           showUI

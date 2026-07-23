@@ -1,7 +1,7 @@
 // components/ui/ArtworkMedia.tsx
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   src: string;
@@ -26,7 +26,7 @@ export default function ArtworkMedia({ src, artworkId }: Props) {
 
   return (
     <video
-      key={artworkId} // har artwork ke liye naya DOM node force karega
+      key={artworkId}
       ref={videoRef}
       src={src}
       autoPlay
@@ -35,5 +35,6 @@ export default function ArtworkMedia({ src, artworkId }: Props) {
       preload="metadata"
       className="absolute inset-0 h-full w-full object-contain"
     />
+
   );
 }
