@@ -3,21 +3,33 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CiPlay1, CiPause1 } from "react-icons/ci";
 
 type Props = {
   children: React.ReactNode;
+  isVideo?: boolean;
 };
 
-export default function ArtworkViewer({ children }: Props) {
+export default function ArtworkViewer({ children, isVideo = false }: Props) {
   const [showUI, setShowUI] = useState(true);
   const [isHolding, setIsHolding] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showCenterIcon, setShowCenterIcon] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const centerTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const clearHideTimer = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
+    }
+  };
+
+  const clearCenterTimer = () => {
+    if (centerTimerRef.current) {
+      clearTimeout(centerTimerRef.current);
+      centerTimerRef.current = null;
     }
   };
 
@@ -31,6 +43,15 @@ export default function ArtworkViewer({ children }: Props) {
     }, 3000);
   }, [isHolding]);
 
+  // Center icon ko baaki UI se pehle, jaldi hide karne ke liye alag timer
+  const flashCenterIcon = () => {
+    clearCenterTimer();
+    setShowCenterIcon(true);
+    centerTimerRef.current = setTimeout(() => {
+      setShowCenterIcon(false);
+    }, 500);
+  };
+
   useEffect(() => {
     startHideTimer();
 
@@ -39,14 +60,37 @@ export default function ArtworkViewer({ children }: Props) {
     };
   }, [startHideTimer]);
 
-  const handleTap = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Video ke actual play/pause state ko track karo
+  useEffect(() => {
+    if (!isVideo) return;
+
+    const video = document.querySelector("video");
+    if (!video) return;
+
+    setIsPaused(video.paused);
+
+    const handlePlay = () => setIsPaused(false);
+    const handlePause = () => setIsPaused(true);
+
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("pause", handlePause);
+
+    return () => {
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("pause", handlePause);
+      clearCenterTimer();
+    };
+  }, [isVideo]);
+
+  const handleTap = () => {
     const video = document.querySelector("video");
     if (video) {
       if (video.paused) {
-        video.play().catch(() => { });
+        video.play().catch(() => {});
       } else {
         video.pause();
       }
+      flashCenterIcon();
     }
     setShowUI(true);
     if (!isHolding) {
@@ -75,11 +119,24 @@ export default function ArtworkViewer({ children }: Props) {
       onPointerLeave={handlePointerUp}
       onTouchEnd={handlePointerUp}
     >
-      <div
-        className={`absolute inset-0 z-50 transition-opacity duration-300 ${showUI
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
+      {/* Center Play/Pause Icon — fast, independent fade */}
+      {isVideo && (
+        <div
+          className={`pointer-events-none fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 text-5xl text-white transition-opacity duration-150 ${
+            showCenterIcon ? "opacity-100" : "opacity-0"
           }`}
+        >
+          {isPaused ? <CiPlay1 /> : <CiPause1 />}
+        </div>
+      )}
+
+      {/* Rest of the UI — slower fade, 3s timer */}
+      <div
+        className={`absolute inset-0 z-50 transition-opacity duration-300 ${
+          showUI
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
       >
         {children}
       </div>

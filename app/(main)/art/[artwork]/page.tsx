@@ -203,13 +203,14 @@ export default async function Artwork({
             {/* Dark Gradient */}
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-black/30" />
 
-            <ArtworkViewer>
+            <ArtworkViewer isVideo={post.mediaType === "video"}>
                 {/* Top Bar */}
                 <div className="absolute top-0 left-0 z-50 flex w-full items-center justify-between p-0">
                     <Link href="/" className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-black/60" >
                         <GiCrossMark />
                     </Link>
                 </div>
+
 
                 {/* Right Side Buttons */}
                 <PostButtons
