@@ -1,18 +1,18 @@
 // public/sw.js
 
-const CACHE_NAME = "gyarchi-v3";
-
+const CACHE_NAME = "gyarchi-v4";
 const STATIC_ASSETS = [
   "/",
   "/Logo.png",
   "/favicon.ico",
 ];
 
+const NAV_TIMEOUT_MS = 3000;
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
-
   self.skipWaiting();
 });
 
@@ -26,7 +26,6 @@ self.addEventListener("activate", (event) => {
       )
     )
   );
-
   self.clients.claim();
 });
 
@@ -55,27 +54,10 @@ self.addEventListener("fetch", (event) => {
   // Never cache ANY media
   // ===========================
   const mediaExtensions = [
-    ".mp4",
-    ".webm",
-    ".mov",
-    ".mkv",
-    ".avi",
-    ".m4v",
-    ".mp3",
-    ".wav",
-    ".ogg",
-    ".aac",
-    ".flac",
-    ".m4a",
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".gif",
-    ".webp",
-    ".svg",
-    ".avif",
-    ".bmp",
-    ".ico",
+    ".mp4", ".webm", ".mov", ".mkv", ".avi", ".m4v",
+    ".mp3", ".wav", ".ogg", ".aac", ".flac", ".m4a",
+    ".jpg", ".jpeg", ".png", ".gif", ".webp",
+    ".svg", ".avif", ".bmp", ".ico",
   ];
 
   if (
@@ -83,40 +65,65 @@ self.addEventListener("fetch", (event) => {
     request.destination === "audio" ||
     request.destination === "image" ||
     request.headers.has("range") ||
-    mediaExtensions.some((ext) =>
-      url.pathname.toLowerCase().endsWith(ext)
-    )
+    mediaExtensions.some((ext) => url.pathname.toLowerCase().endsWith(ext))
   ) {
     return;
   }
 
   // ===========================
-  // HTML
-  // Network First
+  // Next.js hashed static assets — content-addressed, immutable
+  // Cache-first, no revalidation needed (filename changes if content changes)
   // ===========================
-  if (request.mode === "navigate") {
+  if (url.pathname.startsWith("/_next/static/")) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, copy);
-            });
-          }
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+
+        return fetch(request).then((response) => {
+          if (!response.ok) return response;
+
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
 
           return response;
-        })
-        .catch(async () => {
-          return (await caches.match(request)) || caches.match("/");
-        })
+        });
+      })
     );
 
     return;
   }
 
   // ===========================
-  // Only cache CSS, JS & Fonts
+  // HTML — Network First, fast fallback to cache
+  // ===========================
+  if (request.mode === "navigate") {
+    event.respondWith(
+      Promise.race([
+        fetch(request).then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        }),
+        new Promise((resolve) => {
+          setTimeout(async () => {
+            const cached = await caches.match(request);
+            if (cached) resolve(cached);
+            // agar cache mein bhi nahi mila, race ka doosra promise
+            // (fetch) jeetega jab wo resolve/reject hoga
+          }, NAV_TIMEOUT_MS);
+        }),
+      ]).catch(async () => {
+        return (await caches.match(request)) || caches.match("/");
+      })
+    );
+
+    return;
+  }
+
+  // ===========================
+  // CSS, JS & Fonts (non-hashed) — Stale While Revalidate
   // ===========================
   if (
     request.destination !== "style" &&
@@ -127,20 +134,20 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const cached = await cache.match(request);
 
-      return fetch(request).then((response) => {
-        if (!response.ok) return response;
+      const networkFetch = fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            cache.put(request, response.clone());
+          }
+          return response;
+        })
+        .catch(() => cached);
 
-        const copy = response.clone();
-
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, copy);
-        });
-
-        return response;
-      });
+      // Cache mile to turant wahi do, background mein update ho jaayega
+      return cached || networkFetch;
     })
   );
 });
