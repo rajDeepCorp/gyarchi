@@ -64,7 +64,7 @@ export async function generateMetadata({
         post.description?.trim() ||
         `Discover "${post.title}" created by ${post.username} on GyArchi. Explore artwork, connect with artists, and find creative inspiration.`;
 
-    const canonical = `https://gyarchi.vercel.app/art/${artwork}`;
+    const canonical = `https://gyarchi.com/art/${artwork}`;
 
     return {
         title,
