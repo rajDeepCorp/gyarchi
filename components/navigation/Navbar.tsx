@@ -2,7 +2,6 @@
 
 "use client";
 import { useFloatingFunction, useLinksFunction } from '@/utils/clientfunctions'
-import Image from 'next/image';
 import Link from 'next/link'
 
 const Navbar = () => {
@@ -28,13 +27,6 @@ const Navbar = () => {
                     <Icon />
                 </Link>
             ))}
-            <Image
-                src="/Logo.png"
-                alt="GyArchi Logo"
-                width={32}
-                height={32}
-                className="absolute left-0 -translate-x-10 shadow shadow-stone-500 rounded-xl"
-            />
         </nav>
     )
 }
