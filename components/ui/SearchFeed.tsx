@@ -278,7 +278,7 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                                 </div>
                             )}
 
-                            <details className="absolute bottom-2 left-2 p-1 rounded-full backdrop-blur-2xl shadow shadow-stone-500 z-50 bg-background">
+                            <details className="absolute top-2 left-2 p-1 rounded-full backdrop-blur-2xl shadow shadow-stone-500 z-50 bg-background">
                                 <summary
                                     onClick={(e) => {
                                         e.preventDefault();
