@@ -74,22 +74,22 @@ export default async function Home() {
 }
 
 
-{/* <header className="relative mx-auto sm:max-w-xl max-w-fit text-center shadow shadow-stone-500 rounded-2xl mt-1 py-1 px-1 flex justify-center items-center gap-1">
-                <Image
-                    src="/Logo.png"
-                    alt="GyArchi Logo"
-                    width={42}
-                    height={42}
-                    className={`rounded-xl`}
-                />
-                <details>
-                    <summary className="list-none">
-                        <h1 className="text-4xl underline fancyFont">GyArchi</h1>
-                    </summary>
-                    <p
-                        className="text-sm opacity-80 italic"
-                    >
-                        A social platform where artists, designers, photographers and creators showcase their work, build portfolios and connect with the creative community.
-                    </p>
-                </details>
-            </header> */}
+// {/* <header className="relative mx-auto sm:max-w-xl max-w-fit text-center shadow shadow-stone-500 rounded-2xl mt-1 py-1 px-1 flex justify-center items-center gap-1">
+//     <Image
+//         src="/Logo.png"
+//         alt="GyArchi Logo"
+//         width={42}
+//         height={42}
+//         className={`rounded-xl`}
+//     />
+//     <details>
+//         <summary className="list-none">
+//             <h1 className="text-4xl underline fancyFont">GyArchi</h1>
+//         </summary>
+//         <p
+//             className="text-sm opacity-80 italic"
+//         >
+//             A social platform where artists, designers, photographers and creators showcase their work, build portfolios and connect with the creative community.
+//         </p>
+//     </details>
+// </header> */}
