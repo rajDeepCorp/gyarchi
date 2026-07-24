@@ -223,6 +223,8 @@ export default async function Artwork({
                     saved={saved}
                     gotted={gotted}
                     isAuthenticated={!!session}
+                    mediaUrl={post.mediaUrl}
+                    title={post.title}
                 />
 
                 {/* Bottom Content */}
@@ -259,5 +261,3 @@ export default async function Artwork({
         </main>
     );
 }
-
-

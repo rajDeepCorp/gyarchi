@@ -16,6 +16,8 @@ type PostButtonsProps = {
     saved: boolean;
     gotted: boolean;
     isAuthenticated: boolean;
+    mediaUrl: string;
+    title: string;
 };
 
 const ACTIONS = [
@@ -34,14 +36,44 @@ const PostButtons = ({
     saved,
     gotted,
     isAuthenticated,
+    mediaUrl,
+    title,
 }: PostButtonsProps) => {
 
-    const [loading, setLoading] = useState<
-        "like" | "save" | "got" | null
-    >(null);
+    const [loading, setLoading] = useState<"like" | "save" | "got" | null>(null);
+    const [downloading, setDownloading] = useState(false);
 
     const [reacted, setReacted] = useState({ liked, saved, gotted, });
     const [counts, setCounts] = useState({ likes, saves, got, });
+
+    // Downloads the media file to the user's device
+    const downloadToDevice = useCallback(async () => {
+        try {
+            setDownloading(true);
+            const response = await fetch(mediaUrl);
+            const blob = await response.blob();
+
+            const extMatch = mediaUrl.match(/\.([a-zA-Z0-9]+)(?:\?.*)?$/);
+            const ext = extMatch ? extMatch[1] : "jpg";
+            const safeName = title?.trim()
+                ? title.replace(/[^a-z0-9-_ ]/gi, "").trim().replace(/\s+/g, "-")
+                : postId;
+
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = `${safeName}.${ext}`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error(error);
+            alert("Could not download file.");
+        } finally {
+            setDownloading(false);
+        }
+    }, [mediaUrl, title, postId]);
 
     const handleReaction = useCallback(
         async (type: "like" | "save" | "got") => {
@@ -75,6 +107,9 @@ const PostButtons = ({
                     ...prev,
                     [action.reactedKey]: data.reacted,
                 }));
+                if (type === "save") {
+                    downloadToDevice();
+                }
             } catch (error) {
                 console.error(error);
                 alert("Something went wrong.");
@@ -82,7 +117,7 @@ const PostButtons = ({
                 setLoading(null);
             }
         },
-        [loading, postId]
+        [loading, postId, downloadToDevice]
     );
 
     if (!isAuthenticated) {
@@ -103,7 +138,7 @@ const PostButtons = ({
             {ACTIONS.map((action) => (
                 <button
                     key={action.type}
-                    disabled={loading === action.type}
+                    disabled={loading === action.type || (action.type === "save" && downloading)}
                     onClick={() => handleReaction(action.type)}
                     className="flex flex-col items-center gap-1 transition hover:scale-110 disabled:opacity-50"
                 >
