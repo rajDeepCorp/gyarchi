@@ -291,7 +291,7 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                                     <CiCircleList />
                                 </summary>
                                 <ul
-                                    className="absolute shadow-inner shadow-stone-500 px-10 py-4 rounded-2xl mt-5 bg-background"
+                                    className="absolute shadow-inner text-xs shadow-stone-500 px-5 py-4 rounded-2xl mt-4 bg-background"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
@@ -301,7 +301,7 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                                         <li
                                             key={type}
                                             onClick={(e) => handleReaction(e, post.id, type)}
-                                            className={`cursor-pointer ${reactionState[type] ? "text-red-500" : ""
+                                            className={`cursor-pointer px-2 my-1 shadow-stone-500 w-20 rounded-2xl ${reactionState[type] ? "shadow-inner" : "shadow"
                                                 } ${reactingId === `${post.id}-${type}`
                                                     ? "opacity-50 pointer-events-none"
                                                     : ""
@@ -311,6 +311,7 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                                         </li>
                                     ))}
                                     <li
+                                        className="cursor-pointer px-2 my-1 shadow shadow-stone-500 w-20 rounded-2xl"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -320,16 +321,24 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                                         Report
                                     </li>
                                     {isOwner && (
-                                        <li
-                                            onClick={(e) => handleDelete(e, post.id)}
-                                            className={
-                                                deletingId === post.id
-                                                    ? "opacity-50 pointer-events-none"
-                                                    : "text-red-500 cursor-pointer"
-                                            }
-                                        >
-                                            {deletingId === post.id ? "Deleting..." : "Delete"}
-                                        </li>
+                                        <>
+                                            <li
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    window.location.href = `/edit/${post.id}`;
+                                                }}
+                                                className={"text-green-500 cursor-pointer px-2 my-1 shadow shadow-stone-500 w-20 rounded-2xl"}
+                                            >
+                                                Edit
+                                            </li>
+                                            <li
+                                                onClick={(e) => handleDelete(e, post.id)}
+                                                className={deletingId === post.id ? "opacity-50 pointer-events-none" : "text-red-500 cursor-pointer px-2 my-1 shadow shadow-stone-500 w-20 rounded-2xl"}
+                                            >
+                                                {deletingId === post.id ? "Deleting..." : "Delete"}
+                                            </li>
+                                        </>
                                     )}
                                 </ul>
                             </details>
