@@ -37,14 +37,17 @@ export async function POST(req: NextRequest) {
       like: {
         count: "likes",
         users: "likedBy",
+        alwaysIncrement: false,
       },
       save: {
         count: "saves",
         users: "savedBy",
+        alwaysIncrement: true, // save counter kabhi decrement nahi hoga
       },
       got: {
         count: "got",
         users: "gotBy",
+        alwaysIncrement: false,
       },
     };
 
@@ -70,18 +73,27 @@ export async function POST(req: NextRequest) {
 
       const reacted = !!post[reaction.users][userId];
 
-      if (reacted) {
-        delete post[reaction.users][userId];
-
-        post[reaction.count] = Math.max(
-          (post[reaction.count] || 0) - 1,
-          0
-        );
-      } else {
+      if (reaction.alwaysIncrement) {
+        // Save: har click pe count hamesha badhega, kabhi ghategaa nahi.
+        // savedBy sirf "kabhi save kiya tha ya nahi" track karne ke liye rahega
+        // (UI me heart-fill jaisa reacted state dikhane ke liye), lekin
+        // uske hone/na hone se count par koi asar nahi padega.
         post[reaction.users][userId] = true;
+        post[reaction.count] = (post[reaction.count] || 0) + 1;
+      } else {
+        if (reacted) {
+          delete post[reaction.users][userId];
 
-        post[reaction.count] =
-          (post[reaction.count] || 0) + 1;
+          post[reaction.count] = Math.max(
+            (post[reaction.count] || 0) - 1,
+            0
+          );
+        } else {
+          post[reaction.users][userId] = true;
+
+          post[reaction.count] =
+            (post[reaction.count] || 0) + 1;
+        }
       }
 
       return post;
