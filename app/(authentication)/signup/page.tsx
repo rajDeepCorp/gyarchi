@@ -1,7 +1,6 @@
 import SignupForm from '@/components/forms/SignupForm'
 import GoogleButton from '@/components/ui/GoogleButton'
 import Link from 'next/link'
-import React from 'react'
 
 export default function Signup() {
   return (

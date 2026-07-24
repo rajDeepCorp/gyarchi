@@ -66,7 +66,7 @@ export async function generateMetadata({
       title,
       description,
       type: "profile",
-      url: `https://gyarchi.com/${encodeURIComponent(
+      url: `https://www.gyarchi.com/${encodeURIComponent(
         user.username.replace("@", "")
       )}`,
       images: [
@@ -87,7 +87,7 @@ export async function generateMetadata({
     },
 
     alternates: {
-      canonical: `https://gyarchi.com/${encodeURIComponent(
+      canonical: `https://www.gyarchi.com/${encodeURIComponent(
         user.username.replace("@", "")
       )}`,
     },

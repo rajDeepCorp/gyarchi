@@ -58,12 +58,12 @@ export const metadata: Metadata = {
   creator: "Vishal Rajdeep",
   publisher: "GyArchi",
 
-  metadataBase: new URL("https://gyarchi.com/"),
+  metadataBase: new URL("https://www.gyarchi.com/"),
 
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://gyarchi.com",
+    url: "https://www.gyarchi.com",
     siteName: "GyArchi",
     title: "GyArchi – Share Art, Inspire the World",
     description:

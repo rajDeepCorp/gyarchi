@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: "About GyArchi",
     description:
       "Discover the vision, mission, and purpose behind GyArchi—a social platform designed for artists and creators.",
-    url: "https://gyarchi.com/about",
+    url: "https://www.gyarchi.com/about",
     type: "website",
     images: [
       {
