@@ -1,4 +1,44 @@
-/* export async function generateMetadata({
+// app/(main)/art/[artwork]/page.tsx
+
+import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import { adminDb } from "@/firebaseAdmin";
+import { auth } from "@/lib/auth";
+import PostButtons from "@/components/ui/PostButtons";
+import ArtworkViewer from "@/components/ui/ArtworkViewer";
+import { MdArrowForward } from "react-icons/md";
+import ArtworkDescription from "@/components/ui/ArtworkDescription";
+import { GiCrossMark } from "react-icons/gi";
+import ArtworkMedia from "@/components/ui/ArtworkMedia";
+import BackArrowButton from "@/components/ui/BackArrowButton";
+
+type ArtworkPageProps = {
+    params: Promise<{
+        artwork: string;
+    }>;
+};
+
+type Post = {
+    title: string;
+    description?: string;
+    mediaUrl: string;
+    mediaType: "image" | "video";
+    thumbnailUrl?: string | null;
+    username: string;
+    likes: number;
+    likedBy?: Record<string, true>;
+    saves: number;
+    savedBy?: Record<string, true>;
+    got: number;
+    gotBy?: Record<string, true>;
+    createdAt: number;
+    tags: string[];
+};
+
+export async function generateMetadata({
     params,
 }: ArtworkPageProps): Promise<Metadata> {
     const { artwork } = await params;
@@ -92,49 +132,7 @@
             follow: true,
         },
     };
-} */
-
-
-
-// app/(main)/art/[artwork]/page.tsx
-
-import Image from "next/image";
-import type { Metadata } from "next";
-import Link from "next/link";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { adminDb } from "@/firebaseAdmin";
-import { auth } from "@/lib/auth";
-import PostButtons from "@/components/ui/PostButtons";
-import ArtworkViewer from "@/components/ui/ArtworkViewer";
-import { MdArrowForward } from "react-icons/md";
-import ArtworkDescription from "@/components/ui/ArtworkDescription";
-import { GiCrossMark } from "react-icons/gi";
-import ArtworkMedia from "@/components/ui/ArtworkMedia";
-import BackArrowButton from "@/components/ui/BackArrowButton";
-
-type ArtworkPageProps = {
-    params: Promise<{
-        artwork: string;
-    }>;
-};
-
-type Post = {
-    title: string;
-    description?: string;
-    mediaUrl: string;
-    mediaType: "image" | "video";
-    thumbnailUrl?: string | null;
-    username: string;
-    likes: number;
-    likedBy?: Record<string, true>;
-    saves: number;
-    savedBy?: Record<string, true>;
-    got: number;
-    gotBy?: Record<string, true>;
-    createdAt: number;
-    tags: string[];
-};
+}
 
 type RelatedPost = Post & { id: string; score: number; };
 
