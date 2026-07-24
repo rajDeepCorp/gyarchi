@@ -326,7 +326,8 @@ export default function SearchFeed({ posts, }: { posts: Post[]; }) {
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                    window.location.href = `/edit/${post.id}`;
+                                                    router.push(`/edit/${post.id}`);
+                                                    // window.location.href = `/edit/${post.id}`;
                                                 }}
                                                 className={"text-green-500 cursor-pointer px-2 my-1 shadow shadow-stone-500 w-20 rounded-2xl"}
                                             >

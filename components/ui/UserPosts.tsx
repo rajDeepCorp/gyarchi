@@ -268,23 +268,14 @@ const UserPosts = ({ posts }: UserPostsProps) => {
                                         {REACTION_LABELS[type]}
                                     </li>
                                 ))}
-                                <li
-                                className="cursor-pointer px-2 my-1 shadow shadow-stone-500 w-20 rounded-2xl"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        // TODO: report handler
-                                    }}
-                                >
-                                    Report
-                                </li>
                                 {isOwner && (
                                     <>
                                         <li
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                window.location.href = `/edit/${post.id}`;
+                                                router.push(`/edit/${post.id}`);
+                                                // window.location.href = `/edit/${post.id}`;
                                             }}
                                             className={"text-green-500 cursor-pointer px-2 my-1 shadow shadow-stone-500 w-20 rounded-2xl"}
                                         >

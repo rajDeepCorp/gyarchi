@@ -214,11 +214,18 @@ export default function EditPostPage() {
       </div>
 
       {/* Save Button */}
-      <div className="relative shadow mt-2 shadow-stone-500 p-2 m-1 rounded-4xl flex justify-center items-center">
+      <div className="relative shadow mt-2 shadow-stone-500 p-2 m-1 rounded-4xl flex justify-center items-center gap-2">
+        <button
+          onClick={() => router.back()}
+          disabled={saving}
+          className="px-5 py-2 rounded-l-4xl shadow shadow-stone-500 disabled:opacity-50 disabled:shadow-inner"
+        >
+          {saving ? "Saving..." : "Save Changes"}
+        </button>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-5 py-2 rounded-4xl shadow shadow-stone-500 disabled:opacity-50 disabled:shadow-inner"
+          className="px-5 py-2 rounded-r-4xl shadow shadow-stone-500 disabled:opacity-50 disabled:shadow-inner"
         >
           {saving ? "Saving..." : "Save Changes"}
         </button>
