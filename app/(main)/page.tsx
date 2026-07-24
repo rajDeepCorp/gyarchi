@@ -50,7 +50,7 @@ export default async function Home() {
     }
     return (
         <>
-            <header className="relative mx-auto sm:max-w-xl max-w-fit text-center shadow shadow-stone-500 rounded-2xl mt-1 py-1 px-1 flex flex-col justify-center items-center gap-1 px-4">
+            <header className="relative mx-auto sm:max-w-xl max-w-fit text-center shadow shadow-stone-500 rounded-2xl mt-1 py-1 px-1 flex flex-col justify-center items-center gap-1">
                 <div className="flex items-center gap-1">
                     <Image
                         src="/Logo.png"
