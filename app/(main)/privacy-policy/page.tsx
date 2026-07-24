@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "Privacy Policy | GyArchi",
     description:
       "Learn how GyArchi collects, uses, and protects your personal information.",
-    url: "https://gyarchi.vercel.app/privacy-policy",
+    url: "https://gyarchi.com/privacy-policy",
     type: "website",
     images: [
       {

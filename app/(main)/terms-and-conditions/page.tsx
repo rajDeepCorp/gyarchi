@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "Terms & Conditions | GyArchi",
     description:
       "Read the Terms & Conditions governing the use of the GyArchi platform.",
-    url: "https://gyarchi.vercel.app/terms-and-conditions",
+    url: "https://gyarchi.com/terms-and-conditions",
     type: "website",
     images: [
       {

@@ -1,45 +1,4 @@
-// app/(main)/art/[artwork]/page.tsx
-
-import Image from "next/image";
-import type { Metadata } from "next";
-import Link from "next/link";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { adminDb } from "@/firebaseAdmin";
-import { auth } from "@/lib/auth";
-import PostButtons from "@/components/ui/PostButtons";
-import ArtworkViewer from "@/components/ui/ArtworkViewer";
-import { MdArrowForward, MdOutlineNextPlan } from "react-icons/md";
-import ArtworkDescription from "@/components/ui/ArtworkDescription";
-import { GiCrossMark } from "react-icons/gi";
-import ArtworkMedia from "@/components/ui/ArtworkMedia";
-
-type ArtworkPageProps = {
-    params: Promise<{
-        artwork: string;
-    }>;
-};
-
-type Post = {
-    title: string;
-    description?: string;
-    mediaUrl: string;
-    mediaType: "image" | "video";
-    thumbnailUrl?: string | null;
-    username: string;
-    likes: number;
-    likedBy?: Record<string, true>;
-    saves: number;
-    savedBy?: Record<string, true>;
-    got: number;
-    gotBy?: Record<string, true>;
-    createdAt: number;
-    tags: string[];
-};
-
-type RelatedPost = Post & { id: string; score: number; };
-
-export async function generateMetadata({
+/* export async function generateMetadata({
     params,
 }: ArtworkPageProps): Promise<Metadata> {
     const { artwork } = await params;
@@ -133,7 +92,51 @@ export async function generateMetadata({
             follow: true,
         },
     };
-}
+} */
+
+
+
+// app/(main)/art/[artwork]/page.tsx
+
+import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import { adminDb } from "@/firebaseAdmin";
+import { auth } from "@/lib/auth";
+import PostButtons from "@/components/ui/PostButtons";
+import ArtworkViewer from "@/components/ui/ArtworkViewer";
+import { MdArrowForward } from "react-icons/md";
+import ArtworkDescription from "@/components/ui/ArtworkDescription";
+import { GiCrossMark } from "react-icons/gi";
+import ArtworkMedia from "@/components/ui/ArtworkMedia";
+import BackArrowButton from "@/components/ui/BackArrowButton";
+
+type ArtworkPageProps = {
+    params: Promise<{
+        artwork: string;
+    }>;
+};
+
+type Post = {
+    title: string;
+    description?: string;
+    mediaUrl: string;
+    mediaType: "image" | "video";
+    thumbnailUrl?: string | null;
+    username: string;
+    likes: number;
+    likedBy?: Record<string, true>;
+    saves: number;
+    savedBy?: Record<string, true>;
+    got: number;
+    gotBy?: Record<string, true>;
+    createdAt: number;
+    tags: string[];
+};
+
+type RelatedPost = Post & { id: string; score: number; };
 
 export default async function Artwork({
     params,
@@ -244,12 +247,16 @@ export default async function Artwork({
                 </div>
             </ArtworkViewer>
             {nextRelatedPost && (
-                <Link
-                    href={`/art/${nextRelatedPost.id}`}
-                    className="absolute bottom-4 right-4 z-50 rounded-full shadow shadow-stone-500 bg-black/40 px-4 py-2 text-md font-medium text-white backdrop-blur-md transition hover:bg-black/60"
-                >
-                    <MdArrowForward />
-                </Link>
+                <div className="absolute bottom-4 right-4 z-50 flex justify-center items-center gap-0.5">
+                    <BackArrowButton />
+                    <Link
+                        href={`/art/${nextRelatedPost.id}`}
+                        aria-label="Next"
+                        className="rounded-r-full shadow shadow-stone-500 bg-black/40 px-2 py-1 text-md font-medium text-white backdrop-blur-md transition hover:bg-black/60"
+                    >
+                        <MdArrowForward />
+                    </Link>
+                </div>
             )}
         </main>
     );
