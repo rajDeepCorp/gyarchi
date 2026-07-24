@@ -4,6 +4,20 @@ import { adminDb } from "@/firebaseAdmin";
 import SearchFeed from "@/components/ui/SearchFeed";
 import Image from "next/image";
 import MainFooter from "@/components/ui/MainFooter";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-image-preview": "none",
+            noimageindex: true,
+        },
+    },
+};
 
 export default async function Home() {
     const snapshot = await adminDb.ref("posts").get();
